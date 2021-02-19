@@ -1,16 +1,6 @@
 # cse210-tc07
 Remote Repository for week 07 CSE 210
 
-
-
-
-
-
-
-
-
-
-
 Conor McShane,
 I was born in Utah in the year 2000. I moved to Washington State
 when I was 2 and that is where I lived most of my life. I have played
