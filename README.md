@@ -14,3 +14,6 @@ Mr. Game and Watch. I play the piano with some intermediate skill.
 
 Ammon Quarshie
 I'm from Ghana, studying Software Engineering at BYU-I. I play soccer (both indoors and out), play piano and absolutely love jazz.
+
+Travis Smith
+I am from Spokane Washington, I love to rock climb.
