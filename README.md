@@ -17,3 +17,6 @@ I'm from Ghana, studying Software Engineering at BYU-I. I play soccer (both indo
 
 Travis Smith
 I am from Spokane Washington, but I live in Rexburg with my wife. I love to rock climb and play volleyball.
+
+Kyle Hansen
+I am just a simple man trying to make my way in the universe.
