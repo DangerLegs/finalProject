@@ -13,8 +13,9 @@ CHARACTER_SCALING = 1
 TILE_SCALING = 0.5
 
 # Physics constants
-PLAYER_MOVEMENT_SPEED = 10
+PLAYER_MOVEMENT_SPEED = 20
 PLAYER_JUMP_SPEED = 25
+ENEMY_MOVEMENT_SPEED = 5
 GRAVITY = 1
 
 # Scroll parameters
@@ -38,11 +39,16 @@ class MyGame(arcade.Window):
         self.wall_list = None
         self.danger_list = None
         self.environment_list = None
+
+
         
         # initializing player variables
         self.player_list = None
         self.player_sprite = None
-        self.physics_engine = None
+        self.player_physics_engine = None
+        self.enemy_sprite = None
+        self.enemy_list = None
+        self.enemy_physics_engine = None
 
         # initializing scrolling parameters
         self.view_bottom = 0
@@ -55,21 +61,30 @@ class MyGame(arcade.Window):
 
 
     def setup(self):
-        """ Sets up the game"""
-        self.player_list = arcade.SpriteList()        
+        """ Sets up the game"""      
         
         # sets up the player's character
-        image_source = ":resources:images/animated_characters/robot/robot_idle.png"
-        self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCALING)
-        self.player_sprite.center_x = 600
-        self.player_sprite.center_y = 275
+        self.player_list = arcade.SpriteList()  
+        player_image_source = ":resources:images/animated_characters/robot/robot_idle.png"
+        self.player_sprite = arcade.Sprite(player_image_source, CHARACTER_SCALING)
+        self.player_sprite.center_x = 300
+        self.player_sprite.center_y = 400
         self.player_list.append(self.player_sprite)
+
+        self.enemy_list = arcade.SpriteList()
+        enemy_image_source = ":resources:images/animated_characters/zombie/zombie_idle.png"
+        self.enemy_sprite = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
+        self.enemy_sprite.center_x = 900
+        self.enemy_sprite.center_y = 320
+        self.enemy_list.append(self.enemy_sprite)
+
         
         # assigns variable to map and map layers
         map_name = "experimental_map.tmx"
         wall_layer_name = "collision_walls"
         dangers_layer_name = "dangers"
         environment_layer_name = "non_collision_walls"
+        
         my_map = arcade.tilemap.read_tmx(map_name)
 
         # the ground
@@ -85,7 +100,8 @@ class MyGame(arcade.Window):
         self.danger_list = arcade.tilemap.process_layer(my_map, dangers_layer_name, TILE_SCALING)
  
         # sets up the physics engine
-        self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, self.wall_list, GRAVITY)
+        self.player_physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, self.wall_list, GRAVITY)
+        self.enemy_physics_engine = arcade.PhysicsEnginePlatformer(self.enemy_sprite, self.wall_list, GRAVITY)
 
     
     def on_draw(self):
@@ -99,6 +115,8 @@ class MyGame(arcade.Window):
         self.wall_list.draw() 
         self.player_list.draw()
         self.danger_list.draw()
+        self.enemy_list.draw()
+
 
         """draw temporary you're dying so that
         he knows that we know that he is supposed
@@ -112,7 +130,7 @@ class MyGame(arcade.Window):
         """updates sprites as key is pressed"""
 
         if key == arcade.key.UP or key == arcade.key.W:
-            if self.physics_engine.can_jump():
+            if self.player_physics_engine.can_jump():
                 self.player_sprite.change_y = PLAYER_JUMP_SPEED
         elif key == arcade.key.DOWN or key == arcade.key.S:
             self.player_sprite.change_y = -PLAYER_MOVEMENT_SPEED
@@ -138,17 +156,26 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time):
         """updates the player's position and screen scrolling"""
         
-        # moves the player
-        self.physics_engine.update()
+        if self.enemy_sprite.center_x == 400:
+            self.enemy_sprite.change_x = ENEMY_MOVEMENT_SPEED
+        elif self.enemy_sprite.center_x == 900:
+            self.enemy_sprite.change_x = -ENEMY_MOVEMENT_SPEED
+
+        # moves the player and enemies
+        self.player_physics_engine.update()
+        self.enemy_physics_engine.update()
 
         # see if the player hit any dangers
         danger_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                                self.danger_list)
+        enemy_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
+                                                              self.enemy_list)
+
 
         """temporary code to get the screen to print 
         you are dying across the screen. It will
         eventually be replaced with a game over screen"""
-        if len(danger_hit_list) > 0:
+        if len(danger_hit_list) or len(enemy_hit_list) > 0:
             self.dying = True
         else:
             self.dying = False
@@ -193,5 +220,4 @@ class MyGame(arcade.Window):
 if __name__ == "__main__":
     window = MyGame()
     window.setup()
-    arcade.run()
     arcade.run()
