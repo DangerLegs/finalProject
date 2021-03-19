@@ -126,6 +126,11 @@ class GameView(arcade.View):
         self.danger_list = None
         self.environment_list = None
 
+        self.liveCount = 5
+
+        # if self.liveCount == -100:
+        #         lost = GameOverView()
+        #         lost
 
         
         # initializing player variables
@@ -208,7 +213,7 @@ class GameView(arcade.View):
         he knows that we know that he is supposed
         to die"""
         if self.dying:
-            arcade.draw_text("YOU ARE DYING", (self.player_sprite.center_x+50), 
+            arcade.draw_text("Lives left:  " + str(self.liveCount), (self.player_sprite.center_x+50), 
                          self.player_sprite.center_y, arcade.color.RED, 25)
 
 
@@ -262,7 +267,9 @@ class GameView(arcade.View):
         you are dying across the screen. It will
         eventually be replaced with a game over screen"""
         if len(danger_hit_list) or len(enemy_hit_list) > 0:
+            self.liveCount = self.liveCount - 1
             self.dying = True
+            
         else:
             self.dying = False
 
