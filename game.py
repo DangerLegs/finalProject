@@ -171,10 +171,10 @@ class GameView(arcade.View):
 
         
         # assigns variable to map and map layers
-        map_name = "experimental_map.tmx"
-        wall_layer_name = "collision_walls"
-        dangers_layer_name = "dangers"
-        environment_layer_name = "non_collision_walls"
+        map_name = "game_map_1.tmx"
+        wall_layer_name = "collision_blocks"
+        dangers_layer_name = "danger_blocks"
+        environment_layer_name = "background"
         
         my_map = arcade.tilemap.read_tmx(map_name)
 
