@@ -1,3 +1,4 @@
+
 """
 team game
 """
@@ -11,11 +12,11 @@ SCREEN_TITLE = "Platformer"
 
 # Size multiplier
 CHARACTER_SCALING = 1
-TILE_SCALING = 0.5
+TILE_SCALING = 0.25
 
 # Physics constants
 PLAYER_MOVEMENT_SPEED = 20
-PLAYER_JUMP_SPEED = 25
+PLAYER_JUMP_SPEED = 30
 ENEMY_MOVEMENT_SPEED = 5
 GRAVITY = 1
 
@@ -171,10 +172,10 @@ class GameView(arcade.View):
 
         
         # assigns variable to map and map layers
-        map_name = "experimental_map.tmx"
-        wall_layer_name = "collision_walls"
-        dangers_layer_name = "dangers"
-        environment_layer_name = "non_collision_walls"
+        map_name = "game_map_1.tmx"
+        wall_layer_name = "collision_blocks"
+        dangers_layer_name = "danger_blocks"
+        # environment_layer_name = "background"
         
         my_map = arcade.tilemap.read_tmx(map_name)
 
@@ -185,7 +186,7 @@ class GameView(arcade.View):
                                                         use_spatial_hash=True)
 
         # the non-iteractable drawings
-        self.environment_list = arcade.tilemap.process_layer(my_map, environment_layer_name, TILE_SCALING)
+        # self.environment_list = arcade.tilemap.process_layer(my_map, environment_layer_name, TILE_SCALING)
 
         # the danger areas
         self.danger_list = arcade.tilemap.process_layer(my_map, dangers_layer_name, TILE_SCALING)
@@ -202,7 +203,7 @@ class GameView(arcade.View):
         arcade.start_render()
         
         # draw everything
-        self.environment_list.draw()
+        #self.environment_list.draw()
         self.wall_list.draw() 
         self.player_list.draw()
         self.danger_list.draw()
