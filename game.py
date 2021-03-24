@@ -519,14 +519,15 @@ class GameView(arcade.View):
 
         for danger in danger_hit_list:
             arcade.play_sound(self.jump_sound)
-            self.lives = self.lives -1
+            #self.lives = self.lives -1
 
         
         if self.lives <= 0:
                 #arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
-                end = spikeDeath()
-                end
-                self.window.show_view(end)
+                self.lives = self.lives - 1
+                # end = spikeDeath()
+                # end
+                # self.window.show_view(end)
             
 
         # Track if we need to change the viewport
