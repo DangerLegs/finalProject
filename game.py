@@ -272,10 +272,6 @@ class GameView(arcade.View):
 
         self.level = 1
         # Keep track of the lives
-        self.lives = 5
-        if self.lives == 0:
-                end = GameOverView()
-                end
 
         # Load sounds
         self.collect_coin_sound = arcade.load_sound(":resources:sounds/coin1.wav")
@@ -291,9 +287,6 @@ class GameView(arcade.View):
 
         # Keep track of the lives
         self.lives = 5
-        if self.lives == 0:
-                end = GameOverView()
-                end
 
         # Create the Sprite lists
         self.player_list = arcade.SpriteList()
@@ -526,9 +519,14 @@ class GameView(arcade.View):
 
         for danger in danger_hit_list:
             arcade.play_sound(self.jump_sound)
-            s_dead = spikeDeath()
-            s_dead
+            self.lives = self.lives -1
 
+        
+        if self.lives <= 0:
+                #arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+                end = spikeDeath()
+                end
+                self.window.show_view(end)
             
 
         # Track if we need to change the viewport
