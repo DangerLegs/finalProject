@@ -256,6 +256,7 @@ class GameView(arcade.View):
         self.player_list = None
         self.ememy_list = None
 
+
         # Separate variable that holds the player sprite
         self.player_sprite = None
 
@@ -309,9 +310,21 @@ class GameView(arcade.View):
         self.enemy_list = arcade.SpriteList()
         enemy_image_source = ":resources:images/animated_characters/zombie/zombie_idle.png"
         self.enemy_sprite = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
+        self.enemy_sprite_2 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
+        self.enemy_sprite_3 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
+        self.enemy_sprite_4 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
         self.enemy_sprite.center_x = 900
         self.enemy_sprite.center_y = 320
+        self.enemy_sprite_2.center_x = 880
+        self.enemy_sprite_2.center_y = 320
+        self.enemy_sprite_3.center_x = 860
+        self.enemy_sprite_3.center_y = 320
+        self.enemy_sprite_4.center_x = 840
+        self.enemy_sprite_4.center_y = 320
         self.enemy_list.append(self.enemy_sprite)
+        self.enemy_list.append(self.enemy_sprite_2)
+        self.enemy_list.append(self.enemy_sprite_3)
+        self.enemy_list.append(self.enemy_sprite_4)
         # --- Load in a map from the tiled editor ---
 
         # Name of the layer in the file that has our platforms/walls
