@@ -308,14 +308,14 @@ class GameView(arcade.View):
         self.enemy_sprite_2 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
         self.enemy_sprite_3 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
         self.enemy_sprite_4 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
-        self.enemy_sprite.center_x = 900
-        self.enemy_sprite.center_y = 320
-        self.enemy_sprite_2.center_x = 880
-        self.enemy_sprite_2.center_y = 320
-        self.enemy_sprite_3.center_x = 860
-        self.enemy_sprite_3.center_y = 320
-        self.enemy_sprite_4.center_x = 840
-        self.enemy_sprite_4.center_y = 320
+        self.enemy_sprite.center_x = 619
+        self.enemy_sprite.center_y = 992
+        self.enemy_sprite_2.center_x = 1146
+        self.enemy_sprite_2.center_y = 1664
+        self.enemy_sprite_3.center_x = 260
+        self.enemy_sprite_3.center_y = 2112
+        self.enemy_sprite_4.center_x = 510
+        self.enemy_sprite_4.center_y = 992
         self.enemy_list.append(self.enemy_sprite)
         self.enemy_list.append(self.enemy_sprite_2)
         self.enemy_list.append(self.enemy_sprite_3)
