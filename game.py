@@ -1,9 +1,9 @@
 """
 Platformer Game
-
 python -m arcade.examples.platform_tutorial.11_animate_character
 """
 import arcade
+import math
 import os
 
 # Constants
@@ -17,18 +17,24 @@ CHARACTER_SCALING = 1
 COIN_SCALING = TILE_SCALING
 SPRITE_PIXEL_SIZE = 150
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
+ENEMY_SCALING = 1.25
 
 # Movement speed of player, in pixels per frame
-PLAYER_MOVEMENT_SPEED = 10
-GRAVITY = 1.25
-PLAYER_JUMP_SPEED = 30
+PLAYER_MOVEMENT_SPEED = 18
+GRAVITY = 1.5
+PLAYER_JUMP_SPEED = 33
+
+# movement speed of enemies
+ENEMY_MOVEMENT_SPEED = 5
+BOSS_MOVEMENT_SPEED = -15
+BOSS_SCALING = 1.5
 
 # How many pixels to keep as a minimum margin between the character
 # and the edge of the screen.
-LEFT_VIEWPORT_MARGIN = 200
-RIGHT_VIEWPORT_MARGIN = 200
-BOTTOM_VIEWPORT_MARGIN = 150
-TOP_VIEWPORT_MARGIN = 100
+LEFT_VIEWPORT_MARGIN = 400
+RIGHT_VIEWPORT_MARGIN = 400
+BOTTOM_VIEWPORT_MARGIN = 300
+TOP_VIEWPORT_MARGIN = 300
 
 PLAYER_START_X = SPRITE_PIXEL_SIZE * TILE_SCALING * 2
 PLAYER_START_Y = SPRITE_PIXEL_SIZE * TILE_SCALING * 1
@@ -260,8 +266,18 @@ class GameView(arcade.View):
         # Separate variable that holds the player sprite
         self.player_sprite = None
 
+
+        # do we have the potion
+        self.has_potion = True
+
         # Our 'physics' engine
         self.physics_engine = None
+
+        # enemy physics engine
+        self.boss_physics_engine = None
+        self.enemy_sprite_2_physics_engine = None
+        self.enemy_sprite_3_physics_engine = None
+        self.enemy_sprie_4_physics_engine = None
 
         # Used to keep track of our scrolling
         self.view_bottom = 0
@@ -283,6 +299,7 @@ class GameView(arcade.View):
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
 
+        
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
@@ -301,27 +318,27 @@ class GameView(arcade.View):
 
         # Set up the player, specifically placing it at these coordinates.
         self.player_sprite = PlayerCharacter()
-
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
         self.player_list.append(self.player_sprite)
 
         # Set up the enemy
         self.enemy_list = arcade.SpriteList()
-        enemy_image_source = ":resources:images/animated_characters/zombie/zombie_idle.png"
-        self.enemy_sprite = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
-        self.enemy_sprite_2 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
-        self.enemy_sprite_3 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
-        self.enemy_sprite_4 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
-        self.enemy_sprite.center_x = 900
-        self.enemy_sprite.center_y = 320
-        self.enemy_sprite_2.center_x = 880
-        self.enemy_sprite_2.center_y = 320
-        self.enemy_sprite_3.center_x = 860
-        self.enemy_sprite_3.center_y = 320
-        self.enemy_sprite_4.center_x = 840
-        self.enemy_sprite_4.center_y = 320
-        self.enemy_list.append(self.enemy_sprite)
+        enemy_image_source = "artwork/1x/stego_idle.png"
+        boss_image_source = "artwork/1x/angry_king_idle.png"
+        self.boss_sprite = arcade.Sprite(boss_image_source, BOSS_SCALING)
+        self.enemy_sprite_2 = arcade.Sprite(enemy_image_source, ENEMY_SCALING)
+        self.enemy_sprite_3 = arcade.Sprite(enemy_image_source, ENEMY_SCALING)
+        self.enemy_sprite_4 = arcade.Sprite(enemy_image_source, ENEMY_SCALING)
+        self.boss_sprite.center_x = 3080
+        self.boss_sprite.center_y = 1573
+        self.enemy_sprite_2.center_x = 520
+        self.enemy_sprite_2.center_y = 965
+        self.enemy_sprite_3.center_x = 1046
+        self.enemy_sprite_3.center_y = 1637
+        self.enemy_sprite_4.center_x = 160
+        self.enemy_sprite_4.center_y = 2084
+        self.enemy_list.append(self.boss_sprite)
         self.enemy_list.append(self.enemy_sprite_2)
         self.enemy_list.append(self.enemy_sprite_3)
         self.enemy_list.append(self.enemy_sprite_4)
@@ -379,8 +396,23 @@ class GameView(arcade.View):
         # Create the 'physics engine'
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite,
                                                              self.wall_list,
-                                                             gravity_constant=GRAVITY,
-                                                             ladders=self.ladder_list)
+                                                             gravity_constant=GRAVITY)
+        
+        self.boss_physics_engine = arcade.PhysicsEnginePlatformer(self.boss_sprite,
+                                                             self.wall_list,
+                                                             gravity_constant=GRAVITY)
+
+        self.enemy2_physics_engine = arcade.PhysicsEnginePlatformer(self.enemy_sprite_2,
+                                                             self.wall_list,
+                                                             gravity_constant=GRAVITY)
+
+        self.enemy3_physics_engine = arcade.PhysicsEnginePlatformer(self.enemy_sprite_3,
+                                                             self.wall_list,
+                                                             gravity_constant=GRAVITY)
+
+        self.enemy4_physics_engine = arcade.PhysicsEnginePlatformer(self.enemy_sprite_4,
+                                                             self.wall_list,
+                                                             gravity_constant=GRAVITY)
 
     def on_draw(self):
         """ Render the screen. """
@@ -470,8 +502,42 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         """ Movement and game logic """
 
+        if self.has_potion:
+            difference_x = self.boss_sprite.center_x - self.player_sprite.center_x
+            difference_y = self.boss_sprite.center_y - self.player_sprite.center_y
+            if difference_y >= -100:
+                distance = math.sqrt((difference_x ** 2) + (difference_y ** 2))
+                if distance < 300:
+                    self.boss_sprite.change_x = BOSS_MOVEMENT_SPEED           
+                elif self.boss_sprite.center_x < 2400 and self.boss_sprite.center_x > 2100:
+                    self.boss_sprite.change_x = BOSS_MOVEMENT_SPEED
+            
+                else:
+                    self.boss_sprite.change_x = 0
+
+        if self.enemy_sprite_2.center_x == 700:
+            self.enemy_sprite_2.change_x = -ENEMY_MOVEMENT_SPEED
+        elif self.enemy_sprite_2.center_x == 520:
+            self.enemy_sprite_2.change_x = ENEMY_MOVEMENT_SPEED
+
+        if self.enemy_sprite_3.center_x == 1236:
+            self.enemy_sprite_3.change_x = -ENEMY_MOVEMENT_SPEED
+        elif self.enemy_sprite_3.center_x == 1046:
+            self.enemy_sprite_3.change_x = ENEMY_MOVEMENT_SPEED
+        
+        if self.enemy_sprite_4.center_x == 320:
+            self.enemy_sprite_4.change_x = -ENEMY_MOVEMENT_SPEED
+        elif self.enemy_sprite_4.center_x == 160:
+            self.enemy_sprite_4.change_x = ENEMY_MOVEMENT_SPEED      
+        
         # Move the player with the physics engine
         self.physics_engine.update()
+        
+        # move the enemies with the physics engine
+        self.boss_physics_engine.update()
+        self.enemy2_physics_engine.update()
+        self.enemy3_physics_engine.update()
+        self.enemy4_physics_engine.update()
 
         # Update animations
         if self.physics_engine.can_jump():
