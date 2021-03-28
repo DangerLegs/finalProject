@@ -18,6 +18,7 @@ COIN_SCALING = TILE_SCALING
 SPRITE_PIXEL_SIZE = 150
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
 ENEMY_SCALING = 1.25
+POTION_SCALING = .075
 
 # Movement speed of player, in pixels per frame
 PLAYER_MOVEMENT_SPEED = 18
@@ -28,6 +29,7 @@ PLAYER_JUMP_SPEED = 33
 ENEMY_MOVEMENT_SPEED = 5
 BOSS_MOVEMENT_SPEED = -15
 BOSS_SCALING = 1.5
+POTION_MOVEMENT_SPEED = 0
 
 # How many pixels to keep as a minimum margin between the character
 # and the edge of the screen.
@@ -264,6 +266,7 @@ class GameView(arcade.View):
         self.ladder_list = None
         self.player_list = None
         self.ememy_list = None
+        self.potion_list = None
         
 
 
@@ -272,7 +275,7 @@ class GameView(arcade.View):
 
 
         # do we have the potion
-        self.has_potion = True
+        self.has_potion = False
 
         # Our 'physics' engine
         self.physics_engine = None
@@ -282,6 +285,7 @@ class GameView(arcade.View):
         self.enemy_sprite_2_physics_engine = None
         self.enemy_sprite_3_physics_engine = None
         self.enemy_sprie_4_physics_engine = None
+        self.potion_sprite_physics_engine = None
 
         # Used to keep track of our scrolling
         self.view_bottom = 0
@@ -344,6 +348,14 @@ class GameView(arcade.View):
         self.enemy_list.append(self.enemy_sprite_4)
         # --- Load in a map from the tiled editor ---
 
+        #setup potion pick up sprite
+        self.potion_list = arcade.SpriteList()
+        potion_image_source = "artwork/nice_eyes/Asset 1nice_king.png"
+        self.potion_sprite = arcade.Sprite(potion_image_source, POTION_SCALING)
+        self.potion_sprite.center_x = 3128
+        self.potion_sprite.center_y = 1024
+        self.potion_list.append(self.potion_sprite)
+
         # Name of the layer in the file that has our platforms/walls
         wall_layer_name = "collision_blocks"
         dangers_layer_name = "danger_blocks"
@@ -365,6 +377,8 @@ class GameView(arcade.View):
                                                         layer_name=wall_layer_name,
                                                         scaling=TILE_SCALING,
                                                         use_spatial_hash=True)
+
+        
         
 
         # -- Moving Platforms
@@ -415,6 +429,10 @@ class GameView(arcade.View):
                                                              self.wall_list,
                                                              gravity_constant=GRAVITY)
 
+        self.potion_sprite_physics_engine = arcade.PhysicsEnginePlatformer(self.potion_sprite,
+                                                     self.wall_list,
+                                                     gravity_constant=GRAVITY)    
+
     def on_draw(self):
         """ Render the screen. """
 
@@ -429,6 +447,7 @@ class GameView(arcade.View):
         self.player_list.draw()
         self.enemy_list.draw()
         self.danger_list.draw()
+        self.potion_sprite.draw()
 
         # Draw our score on the screen, scrolling it with the viewport
         lives_text = f"Lives: {self.lives}"
@@ -580,6 +599,8 @@ class GameView(arcade.View):
                                                                self.danger_list)
         enemy_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                               self.enemy_list)
+        potion_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
+                                                      self.potion_list)
 
         self.death_count = 0
         for enemy in enemy_hit_list:
@@ -591,6 +612,11 @@ class GameView(arcade.View):
         for danger in danger_hit_list:
             arcade.play_sound(self.jump_sound)
             #self.lives = self.lives -1
+
+        #if there is a potion collision then has potion will be set to true
+        for potion in  potion_hit_list:
+            potion.remove_from_sprite_lists()
+            self.has_potion = True
 
         
         if self.lives <= 0:
