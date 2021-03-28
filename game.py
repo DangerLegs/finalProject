@@ -204,7 +204,7 @@ class IntroView(arcade.View):
         self.window.show_view(game_view)
 
 # Screen that displays when the player dies
-class GameOverView(arcade.View):
+class spikeDeath(arcade.View):
 
     def on_show(self):
         """ This is run once when we switch to this view """
@@ -217,7 +217,7 @@ class GameOverView(arcade.View):
     def on_draw(self):
         """ Draw this view """
         arcade.start_render()
-        arcade.draw_text("Game over - you lost!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+        arcade.draw_text("Don't touch the spikes!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                          arcade.color.WHITE, font_size=50, anchor_x="center")
         arcade.draw_text("Click to advance", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
                          arcade.color.WHITE, font_size=20, anchor_x="center")
@@ -264,6 +264,7 @@ class GameView(arcade.View):
         self.ladder_list = None
         self.player_list = None
         self.ememy_list = None
+        
 
 
         # Separate variable that holds the player sprite
@@ -288,11 +289,8 @@ class GameView(arcade.View):
 
         self.end_of_map = 0
 
+        self.level = 1
         # Keep track of the lives
-        self.lives = 1
-        if self.lives == 0:
-                end = GameOverView()
-                end
 
         # Load sounds
         self.collect_coin_sound = arcade.load_sound(":resources:sounds/coin1.wav")
@@ -308,10 +306,7 @@ class GameView(arcade.View):
         self.view_left = 0
 
         # Keep track of the lives
-        self.lives = 1
-        if self.lives == 0:
-                end = GameOverView()
-                end
+        self.lives = 5
 
         # Create the Sprite lists
         self.player_list = arcade.SpriteList()
@@ -327,6 +322,7 @@ class GameView(arcade.View):
 
         # Set up the enemy
         self.enemy_list = arcade.SpriteList()
+
         enemy_image_source = "artwork/1x/stego_idle.png"
         boss_image_source = "artwork/1x/angry_king_idle.png"
         self.boss_sprite = arcade.Sprite(boss_image_source, BOSS_SCALING)
@@ -342,6 +338,7 @@ class GameView(arcade.View):
         self.enemy_sprite_4.center_x = 160
         self.enemy_sprite_4.center_y = 2084
         self.enemy_list.append(self.boss_sprite)
+
         self.enemy_list.append(self.enemy_sprite_2)
         self.enemy_list.append(self.enemy_sprite_3)
         self.enemy_list.append(self.enemy_sprite_4)
@@ -368,6 +365,7 @@ class GameView(arcade.View):
                                                         layer_name=wall_layer_name,
                                                         scaling=TILE_SCALING,
                                                         use_spatial_hash=True)
+        
 
         # -- Moving Platforms
         # moving_platforms_list = arcade.tilemap.process_layer(my_map, moving_platforms_layer_name, TILE_SCALING)
@@ -430,6 +428,7 @@ class GameView(arcade.View):
         #self.coin_list.draw()
         self.player_list.draw()
         self.enemy_list.draw()
+        self.danger_list.draw()
 
         # Draw our score on the screen, scrolling it with the viewport
         lives_text = f"Lives: {self.lives}"
@@ -441,6 +440,9 @@ class GameView(arcade.View):
         #     wall.draw_hit_box(arcade.color.BLACK, 3)
         #
         # self.player_sprite.draw_hit_box(arcade.color.RED, 3)
+        arcade.draw_text(f"{self.player_sprite.center_x} x, {self.player_sprite.center_y} y", (self.player_sprite.center_x + 50), (self.player_sprite.center_y + 30),
+                         arcade.color.WHITE, font_size=20, anchor_x="center")
+
 
     def process_keychange(self):
         """
@@ -578,10 +580,25 @@ class GameView(arcade.View):
                                                                self.danger_list)
         enemy_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                               self.enemy_list)
+
+        self.death_count = 0
         for enemy in enemy_hit_list:
             self.lives = self.lives - 1
+            self.death_count += 1
             arcade.play_sound(self.jump_sound)
             enemy.remove_from_sprite_lists()
+
+        for danger in danger_hit_list:
+            arcade.play_sound(self.jump_sound)
+            #self.lives = self.lives -1
+
+        
+        if self.lives <= 0:
+                #arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+                self.lives = self.lives - 1
+                # end = spikeDeath()
+                # end
+                # self.window.show_view(end)
             
 
         # Track if we need to change the viewport
