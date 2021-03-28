@@ -1,14 +1,14 @@
 """
 Platformer Game
-
 python -m arcade.examples.platform_tutorial.11_animate_character
 """
 import arcade
+import math
 import os
 
 # Constants
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 650
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "Platformer"
 
 # Constants used to scale our sprites from their original size
@@ -17,18 +17,30 @@ CHARACTER_SCALING = 1
 COIN_SCALING = TILE_SCALING
 SPRITE_PIXEL_SIZE = 150
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
+ENEMY_SCALING = 1.25
+BOSS_SCALING = 1.5
+POTION_SCALING = .075
+
 
 # Movement speed of player, in pixels per frame
-PLAYER_MOVEMENT_SPEED = 10
-GRAVITY = 1.25
-PLAYER_JUMP_SPEED = 30
+PLAYER_MOVEMENT_SPEED = 18
+GRAVITY = 1.5
+PLAYER_JUMP_SPEED = 33
+
+# movement speed of enemies
+ENEMY_MOVEMENT_SPEED = 5
+BOSS_MOVEMENT_SPEED = -15
+POTION_MOVEMENT_SPEED = 0
+
+
+
 
 # How many pixels to keep as a minimum margin between the character
 # and the edge of the screen.
-LEFT_VIEWPORT_MARGIN = 200
-RIGHT_VIEWPORT_MARGIN = 200
-BOTTOM_VIEWPORT_MARGIN = 150
-TOP_VIEWPORT_MARGIN = 100
+LEFT_VIEWPORT_MARGIN = 400
+RIGHT_VIEWPORT_MARGIN = 400
+BOTTOM_VIEWPORT_MARGIN = 600
+TOP_VIEWPORT_MARGIN = 300
 
 PLAYER_START_X = SPRITE_PIXEL_SIZE * TILE_SCALING * 2
 PLAYER_START_Y = SPRITE_PIXEL_SIZE * TILE_SCALING * 1
@@ -183,10 +195,7 @@ class IntroView(arcade.View):
     def on_draw(self):
         """ Draw this view """
         arcade.start_render()
-        arcade.draw_text("Oh no! King Dino is on a rampage! The town is going to be reduced to rubble if he's not stopped!"
-                         "His water was poisened his water and turned him into a savage beast! There is only one special potion that can make it pure again."
-                         "You are the only one who can help him. Do you have what it takes to overcome the sinister forces that stand in your way and save the King?"
-                         "Proceed if you dare!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+        arcade.draw_text("Here is the story of the game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                          arcade.color.WHITE, font_size=50, anchor_x="center")
         arcade.draw_text("Click to advance", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
                          arcade.color.WHITE, font_size=20, anchor_x="center")
@@ -258,13 +267,25 @@ class GameView(arcade.View):
         self.ladder_list = None
         self.player_list = None
         self.ememy_list = None
+        self.potion_list = None
 
 
         # Separate variable that holds the player sprite
         self.player_sprite = None
 
+
+        # do we have the potion
+        self.has_potion = False
+
         # Our 'physics' engine
         self.physics_engine = None
+
+        # enemy physics engine
+        self.boss_physics_engine = None
+        self.enemy_sprite_2_physics_engine = None
+        self.enemy_sprite_3_physics_engine = None
+        self.enemy_sprie_4_physics_engine = None
+        self.potion_sprite_physics_engine = None
 
         # Used to keep track of our scrolling
         self.view_bottom = 0
@@ -286,6 +307,7 @@ class GameView(arcade.View):
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
 
+        
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
@@ -301,34 +323,44 @@ class GameView(arcade.View):
         self.background_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
+        
 
         # Set up the player, specifically placing it at these coordinates.
         self.player_sprite = PlayerCharacter()
-
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
         self.player_list.append(self.player_sprite)
 
         # Set up the enemy
         self.enemy_list = arcade.SpriteList()
-        enemy_image_source = ":resources:images/animated_characters/zombie/zombie_idle.png"
-        self.enemy_sprite = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
-        self.enemy_sprite_2 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
-        self.enemy_sprite_3 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
-        self.enemy_sprite_4 = arcade.Sprite(enemy_image_source, CHARACTER_SCALING)
-        self.enemy_sprite.center_x = 900
-        self.enemy_sprite.center_y = 320
-        self.enemy_sprite_2.center_x = 880
-        self.enemy_sprite_2.center_y = 320
-        self.enemy_sprite_3.center_x = 860
-        self.enemy_sprite_3.center_y = 320
-        self.enemy_sprite_4.center_x = 840
-        self.enemy_sprite_4.center_y = 320
-        self.enemy_list.append(self.enemy_sprite)
+        enemy_image_source = "artwork/1x/stego_idle.png"
+        boss_image_source = "artwork/1x/angry_king_idle.png"
+        self.boss_sprite = arcade.Sprite(boss_image_source, BOSS_SCALING)
+        self.enemy_sprite_2 = arcade.Sprite(enemy_image_source, ENEMY_SCALING)
+        self.enemy_sprite_3 = arcade.Sprite(enemy_image_source, ENEMY_SCALING)
+        self.enemy_sprite_4 = arcade.Sprite(enemy_image_source, ENEMY_SCALING)
+        self.boss_sprite.center_x = 3080
+        self.boss_sprite.center_y = 1573
+        self.enemy_sprite_2.center_x = 520
+        self.enemy_sprite_2.center_y = 965
+        self.enemy_sprite_3.center_x = 1046
+        self.enemy_sprite_3.center_y = 1637
+        self.enemy_sprite_4.center_x = 160
+        self.enemy_sprite_4.center_y = 2084
+        self.enemy_list.append(self.boss_sprite)
         self.enemy_list.append(self.enemy_sprite_2)
         self.enemy_list.append(self.enemy_sprite_3)
         self.enemy_list.append(self.enemy_sprite_4)
         # --- Load in a map from the tiled editor ---
+
+        #setup potion pick up sprite
+        self.potion_list = arcade.SpriteList()
+        potion_image_source = "artwork/nice_eyes/Asset 1nice_king.png"
+        self.potion_sprite = arcade.Sprite(potion_image_source, POTION_SCALING)
+        self.potion_sprite.center_x = 3128
+        self.potion_sprite.center_y = 1024
+        self.potion_list.append(self.potion_sprite)
+
 
         # Name of the layer in the file that has our platforms/walls
         wall_layer_name = "collision_blocks"
@@ -382,8 +414,27 @@ class GameView(arcade.View):
         # Create the 'physics engine'
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite,
                                                              self.wall_list,
-                                                             gravity_constant=GRAVITY,
-                                                             ladders=self.ladder_list)
+                                                             gravity_constant=GRAVITY)
+        
+        self.boss_physics_engine = arcade.PhysicsEnginePlatformer(self.boss_sprite,
+                                                             self.wall_list,
+                                                             gravity_constant=GRAVITY)
+
+        self.enemy2_physics_engine = arcade.PhysicsEnginePlatformer(self.enemy_sprite_2,
+                                                             self.wall_list,
+                                                             gravity_constant=GRAVITY)
+
+        self.enemy3_physics_engine = arcade.PhysicsEnginePlatformer(self.enemy_sprite_3,
+                                                             self.wall_list,
+                                                             gravity_constant=GRAVITY)
+
+        self.enemy4_physics_engine = arcade.PhysicsEnginePlatformer(self.enemy_sprite_4,
+                                                             self.wall_list,
+                                                             gravity_constant=GRAVITY)
+
+        self.potion_sprite_physics_engine = arcade.PhysicsEnginePlatformer(self.potion_sprite,
+                                                     self.wall_list,
+                                                     gravity_constant=GRAVITY)                                                     
 
     def on_draw(self):
         """ Render the screen. """
@@ -398,6 +449,7 @@ class GameView(arcade.View):
         #self.coin_list.draw()
         self.player_list.draw()
         self.enemy_list.draw()
+        self.potion_sprite.draw()
 
         # Draw our score on the screen, scrolling it with the viewport
         lives_text = f"Lives: {self.lives}"
@@ -473,8 +525,42 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         """ Movement and game logic """
 
+        if self.has_potion:
+            difference_x = self.boss_sprite.center_x - self.player_sprite.center_x
+            difference_y = self.boss_sprite.center_y - self.player_sprite.center_y
+            if difference_y >= -100:
+                distance = math.sqrt((difference_x ** 2) + (difference_y ** 2))
+                if distance < 300:
+                    self.boss_sprite.change_x = BOSS_MOVEMENT_SPEED           
+                elif self.boss_sprite.center_x < 2400 and self.boss_sprite.center_x > 2100:
+                    self.boss_sprite.change_x = BOSS_MOVEMENT_SPEED
+            
+                else:
+                    self.boss_sprite.change_x = 0
+
+        if self.enemy_sprite_2.center_x == 700:
+            self.enemy_sprite_2.change_x = -ENEMY_MOVEMENT_SPEED
+        elif self.enemy_sprite_2.center_x == 520:
+            self.enemy_sprite_2.change_x = ENEMY_MOVEMENT_SPEED
+
+        if self.enemy_sprite_3.center_x == 1236:
+            self.enemy_sprite_3.change_x = -ENEMY_MOVEMENT_SPEED
+        elif self.enemy_sprite_3.center_x == 1046:
+            self.enemy_sprite_3.change_x = ENEMY_MOVEMENT_SPEED
+        
+        if self.enemy_sprite_4.center_x == 320:
+            self.enemy_sprite_4.change_x = -ENEMY_MOVEMENT_SPEED
+        elif self.enemy_sprite_4.center_x == 160:
+            self.enemy_sprite_4.change_x = ENEMY_MOVEMENT_SPEED      
+        
         # Move the player with the physics engine
         self.physics_engine.update()
+        
+        # move the enemies with the physics engine
+        self.boss_physics_engine.update()
+        self.enemy2_physics_engine.update()
+        self.enemy3_physics_engine.update()
+        self.enemy4_physics_engine.update()
 
         # Update animations
         if self.physics_engine.can_jump():
@@ -512,10 +598,18 @@ class GameView(arcade.View):
                                                                self.danger_list)
         enemy_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                               self.enemy_list)
+        potion_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
+                                                      self.potion_list)
         for enemy in enemy_hit_list:
             self.lives = self.lives - 1
             arcade.play_sound(self.jump_sound)
             enemy.remove_from_sprite_lists()
+    #if there is a potion collision then has potion will be set to true
+        for potion in  potion_hit_list:
+            potion.remove_from_sprite_lists()
+            self.has_potion = True
+        
+
             
 
         # Track if we need to change the viewport
