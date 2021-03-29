@@ -62,7 +62,6 @@ class PlayerCharacter(arcade.Sprite):
 
         # Set the initial texture
         self.texture = self.idle_texture_pair[0]
-
         # Hit box will be set based on the first image used. If you want to specify
         # a different hit box, you can do it like the code below.
         # self.set_hit_box([[-22, -64], [22, -64], [22, 28], [-22, 28]])
