@@ -6,6 +6,7 @@ import arcade
 import math
 import os
 
+from protagonist import PlayerCharacter
 # Constants
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 1000
@@ -333,8 +334,9 @@ class GameView(arcade.View):
 
         # Set up the enemy
         self.enemy_list = arcade.SpriteList()
-        enemy_image_source = "artwork/1x/stego_idle.png"
-        boss_image_source = "finalProject-potion/artwork/1x/angry_dino_idle.png"
+        #"artwork/1x/stego_idle.png"
+        enemy_image_source = "artwork/1x/angry_dino_idle.png"
+        boss_image_source = "artwork/1x/angry_dino_idle.png"
         self.boss_sprite = arcade.Sprite(boss_image_source, BOSS_SCALING)
         self.enemy_sprite_2 = arcade.Sprite(enemy_image_source, ENEMY_SCALING)
         self.enemy_sprite_3 = arcade.Sprite(enemy_image_source, ENEMY_SCALING)
@@ -355,7 +357,8 @@ class GameView(arcade.View):
 
         #setup potion pick up sprite
         self.potion_list = arcade.SpriteList()
-        potion_image_source = "artwork/nice_eyes/Asset 1nice_king.png"
+        #"artwork/nice_eyes/Asset 1nice_king.png"
+        potion_image_source = "artwork/1x/angry_dino_idle.png"
         self.potion_sprite = arcade.Sprite(potion_image_source, POTION_SCALING)
         self.potion_sprite.center_x = 3128
         self.potion_sprite.center_y = 1024
