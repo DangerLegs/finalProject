@@ -299,7 +299,7 @@ class GameView(arcade.View):
                 # pythagorean theorem to calculate direct distance froom player to boss
                 distance = math.sqrt((difference_x ** 2) + (difference_y ** 2))
                 # boss only moves if we are close to him
-                if distance < 400:
+                if distance < 300:
                     self.boss_sprite.change_x = BOSS_MOVEMENT_SPEED
                 # there is a spot that the boss can get stuck easily, this fixes that
                 elif self.boss_sprite.center_x < 2400 and self.boss_sprite.center_x > 2100:
