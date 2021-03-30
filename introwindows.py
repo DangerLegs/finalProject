@@ -22,10 +22,12 @@ class InstructionView(arcade.View):
     def on_draw(self):
         """ Draw this view """
         arcade.start_render()
-        arcade.draw_text("""Use the w key or up on the key pad to jump. Use the 'a' and 'd' keys 
-        or the left and right arrows on the key pad to move left or right.
-        Don't hit the enemies or you'll die.""", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
-                         arcade.color.WHITE, font_size=50, anchor_x="center")
+        arcade.draw_text("Oh no! King Dino is on a rampage! The town is going to be reduced to rubble if he's not stopped! \n"
+                         "His water was poisened and now hes acting like a savage beast! There is only one special \n"
+                         "potion that can make it pure again. You are the only one who can help him. Do you have what it \n"
+                         "takes to overcome the sinister forces that stand in your way and stop the King? \n"
+                         "Proceed if you dare!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+                         arcade.color.WHITE, font_size=23, anchor_x="center")
         arcade.draw_text("Click to advance", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
                          arcade.color.WHITE, font_size=20, anchor_x="center")
 
@@ -46,25 +48,11 @@ class IntroView(arcade.View):
     def on_draw(self):
         """ Draw this view """
         arcade.start_render()
-    arcade.draw_text("""                                 
+        arcade.draw_text("Objective: Find the potion to clean King Dino's water supply.", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+                         arcade.color.WHITE, font_size=36, anchor_x="center")
 
-                                    Oh no! King Dino is on a rampage!
-
-                The town is going to be reduced to rubble if he's not stopped!
-
-                His water was poisened his water and turned him into a savage beast!
-
-                There is only one special potion that can make it pure again.
-
-                                    You are the only one who can help him. 
-
-
-            Do you have what it takes to overcome the sinister 
-            forces that stand in your way and save the King?
-                                                              """, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
-                             arcade.color.WHITE, font_size=20, anchor_x="center")
-            arcade.draw_text("Proceed if you dare! (Click to advance)", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
-                             arcade.color.WHITE, font_size=20, anchor_x="center")
+        arcade.draw_text("Click to advance", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
+                         arcade.color.WHITE, font_size=20, anchor_x="center")
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """ If the user presses the mouse button, start the game. """
