@@ -13,12 +13,9 @@ SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "Platformer"
 
 # Constants used to scale our sprites from their original size
-TILE_SCALING = 1
-CHARACTER_SCALING = 1
+TILE_SCALING = 0.25
 SPRITE_PIXEL_SIZE = 150
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
-ENEMY_SCALING = 1.75
-BOSS_SCALING = 1
 POTION_SCALING = .075
 
 # Movement speed of player, in pixels per frame
