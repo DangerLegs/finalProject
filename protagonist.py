@@ -4,6 +4,15 @@ RIGHT_FACING = 0
 LEFT_FACING = 1
 CHARACTER_SCALING = 0.5
 
+def load_texture_pair(filename):
+    """
+    Load a texture pair, with the second being a mirror image.
+    """
+    return [
+        arcade.load_texture(filename),
+        arcade.load_texture(filename, flipped_horizontally=True)
+    ]
+
 class PlayerCharacter(arcade.Sprite):
     """ Player Sprite"""
     def __init__(self):
