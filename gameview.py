@@ -21,7 +21,7 @@ POTION_SCALING = .075
 # Movement speed of player, in pixels per frame
 PLAYER_MOVEMENT_SPEED = 9
 GRAVITY = 1.3
-PLAYER_JUMP_SPEED = 20
+PLAYER_JUMP_SPEED = 25
 # movement speed of enemies
 ENEMY_MOVEMENT_SPEED = 1
 BOSS_MOVEMENT_SPEED = -7
