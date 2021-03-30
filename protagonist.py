@@ -47,7 +47,7 @@ class PlayerCharacter(arcade.Sprite):
         # Set the initial texture
         self.texture = self.idle_texture_pair[0]
 
-    def update_animation(self, delta_time: float = 1/60):
+    def update_animation(self, delta_time: float = 1/30):
 
         # Figure out if we need to flip face left or right
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
