@@ -143,7 +143,7 @@ class GameView(arcade.View):
         self.enemy_sprite_2.center_y = 965
         self.enemy_list.append(self.enemy_sprite_2)
         self.enemy_sprite_3 = EnemyCharacter()
-        self.enemy_sprite_3.center_x = 1046
+        self.enemy_sprite_3.center_x = 1060
         self.enemy_sprite_3.center_y = 1637   
         self.enemy_list.append(self.enemy_sprite_3)
         self.enemy_sprite_4 = EnemyCharacter()
@@ -299,7 +299,7 @@ class GameView(arcade.View):
                 # pythagorean theorem to calculate direct distance froom player to boss
                 distance = math.sqrt((difference_x ** 2) + (difference_y ** 2))
                 # boss only moves if we are close to him
-                if distance < 400:
+                if distance < 300:
                     self.boss_sprite.change_x = BOSS_MOVEMENT_SPEED
                 # there is a spot that the boss can get stuck easily, this fixes that
                 elif self.boss_sprite.center_x < 2400 and self.boss_sprite.center_x > 2100:
@@ -317,7 +317,7 @@ class GameView(arcade.View):
 
         if self.enemy_sprite_3.center_x == 1236:
             self.enemy_sprite_3.change_x = -ENEMY_MOVEMENT_SPEED
-        elif self.enemy_sprite_3.center_x == 1046:
+        elif self.enemy_sprite_3.center_x == 1060:
             self.enemy_sprite_3.change_x = ENEMY_MOVEMENT_SPEED
         
         if self.enemy_sprite_4.center_x == 320:
