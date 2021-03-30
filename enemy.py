@@ -2,6 +2,7 @@ import arcade
 
 RIGHT_FACING = 0
 LEFT_FACING = 1
+ENEMY_SCALING = 1.25
 
 def load_texture_pair(filename):
     """
