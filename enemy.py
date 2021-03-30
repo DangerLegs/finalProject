@@ -12,7 +12,7 @@ def load_texture_pair(filename):
         arcade.load_texture(filename, flipped_horizontally=True)
     ]
 
-  class EnemyCharacter(arcade.Sprite):
+class EnemyCharacter(arcade.Sprite):
     """enemy sprite animations"""
     def __init__(self):
         
