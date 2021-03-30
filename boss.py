@@ -17,9 +17,6 @@ class BossCharacter(arcade.Sprite):
         
         # set up parent class
         super().__init__()
-        
-        # used for determining the direction of the enemy
-        self.character_face_direction = LEFT_FACING
 
         # used for flipping between image sequences
         self.scale = BOSS_SCALING
