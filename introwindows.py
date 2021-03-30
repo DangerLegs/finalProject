@@ -44,8 +44,9 @@ class IntroView(arcade.View):
     def on_draw(self):
         """ Draw this view """
         arcade.start_render()
-        arcade.draw_text("Here is the story of the game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+        arcade.draw_text("Instructions Screen", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                          arcade.color.WHITE, font_size=50, anchor_x="center")
+
         arcade.draw_text("Click to advance", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
                          arcade.color.WHITE, font_size=20, anchor_x="center")
 
