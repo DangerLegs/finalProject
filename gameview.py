@@ -16,14 +16,14 @@ SCREEN_TITLE = "Platformer"
 TILE_SCALING = 0.25
 SPRITE_PIXEL_SIZE = 150
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
-POTION_SCALING = .075
+POTION_SCALING = 10
 
 # Movement speed of player, in pixels per frame
 PLAYER_MOVEMENT_SPEED = 9
 GRAVITY = 1.3
 PLAYER_JUMP_SPEED = 25
 # movement speed of enemies
-ENEMY_MOVEMENT_SPEED = 1
+ENEMY_MOVEMENT_SPEED = 3
 BOSS_MOVEMENT_SPEED = -7
 POTION_MOVEMENT_SPEED = 0
 # How many pixels to keep as a minimum margin between the character
