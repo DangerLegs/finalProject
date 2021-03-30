@@ -1,6 +1,5 @@
 import arcade
 
-
 def load_texture_pair(filename):
     """
     Load a texture pair, with the second being a mirror image.
@@ -19,7 +18,7 @@ class BossCharacter(arcade.Sprite):
         super().__init__()
 
         # used for flipping between image sequences
-        self.scale = BOSS_SCALING
+        self.scale = 0.5
         self.cur_texture = 0
 
         # load idle textures
