@@ -1,3 +1,5 @@
+import arcade
+
 RIGHT_FACING = 0
 LEFT_FACING = 1
 CHARACTER_SCALING = 0.5
