@@ -143,7 +143,7 @@ class GameView(arcade.View):
         self.enemy_sprite_2.center_y = 965
         self.enemy_list.append(self.enemy_sprite_2)
         self.enemy_sprite_3 = EnemyCharacter()
-        self.enemy_sprite_3.center_x = 1046
+        self.enemy_sprite_3.center_x = 1060
         self.enemy_sprite_3.center_y = 1637   
         self.enemy_list.append(self.enemy_sprite_3)
         self.enemy_sprite_4 = EnemyCharacter()
@@ -317,7 +317,7 @@ class GameView(arcade.View):
 
         if self.enemy_sprite_3.center_x == 1236:
             self.enemy_sprite_3.change_x = -ENEMY_MOVEMENT_SPEED
-        elif self.enemy_sprite_3.center_x == 1046:
+        elif self.enemy_sprite_3.center_x == 1060:
             self.enemy_sprite_3.change_x = ENEMY_MOVEMENT_SPEED
         
         if self.enemy_sprite_4.center_x == 320:
