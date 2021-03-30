@@ -23,8 +23,8 @@ POTION_SCALING = .075
 
 # Movement speed of player, in pixels per frame
 PLAYER_MOVEMENT_SPEED = 9
-GRAVITY = 1.75
-PLAYER_JUMP_SPEED = 15
+GRAVITY = 1.3
+PLAYER_JUMP_SPEED = 20
 # movement speed of enemies
 ENEMY_MOVEMENT_SPEED = 1
 BOSS_MOVEMENT_SPEED = -7
@@ -41,8 +41,6 @@ PLAYER_START_Y = SPRITE_PIXEL_SIZE * TILE_SCALING * 1
 
 
 class GameView(arcade.View):
-
-
     """
     Main application class.
     """
