@@ -1,5 +1,7 @@
 import arcade
-
+"""
+The animation changes for the trike enemies will be made with this class
+"""
 RIGHT_FACING = 0
 LEFT_FACING = 1
 ENEMY_SCALING = 1.25
@@ -16,7 +18,7 @@ def load_texture_pair(filename):
 class EnemyCharacter(arcade.Sprite):
     """enemy sprite animations"""
     def __init__(self):
-        
+        """established the animations to be used"""
         # set up parent class
         super().__init__()
         
@@ -37,7 +39,8 @@ class EnemyCharacter(arcade.Sprite):
         self.texture = self.walk_textures[6][self.character_face_direction]
 
     def update_animation(self, delta_time: float = 1/60):
-
+        """changes the picture that will be drawn next loop"""
+        
         # Figure out if we need to flip face left or right
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
             self.character_face_direction = LEFT_FACING
