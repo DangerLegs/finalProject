@@ -310,19 +310,19 @@ class GameView(arcade.View):
         
         
         # back and forth movement of the enemies
-        if self.enemy_sprite_2.center_x == 700:
+        if self.enemy_sprite_2.center_x >= 700:
             self.enemy_sprite_2.change_x = -ENEMY_MOVEMENT_SPEED
-        elif self.enemy_sprite_2.center_x == 520:
+        elif self.enemy_sprite_2.center_x <= 520:
             self.enemy_sprite_2.change_x = ENEMY_MOVEMENT_SPEED
 
-        if self.enemy_sprite_3.center_x == 1236:
+        if self.enemy_sprite_3.center_x >= 1236:
             self.enemy_sprite_3.change_x = -ENEMY_MOVEMENT_SPEED
-        elif self.enemy_sprite_3.center_x == 1060:
+        elif self.enemy_sprite_3.center_x <= 1060:
             self.enemy_sprite_3.change_x = ENEMY_MOVEMENT_SPEED
         
-        if self.enemy_sprite_4.center_x == 320:
+        if self.enemy_sprite_4.center_x >= 320:
             self.enemy_sprite_4.change_x = -ENEMY_MOVEMENT_SPEED
-        elif self.enemy_sprite_4.center_x == 160:
+        elif self.enemy_sprite_4.center_x <= 160:
             self.enemy_sprite_4.change_x = ENEMY_MOVEMENT_SPEED      
         
         
