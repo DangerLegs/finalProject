@@ -3,6 +3,7 @@ import math
 import os
 
 from introwindows import InstructionView
+# from gameoverview import GameOverView
 # Constants
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 1000
@@ -18,6 +19,9 @@ def main():
     window.show_view(start_view)
     start_view
     arcade.run()
+    # start_view = GameOverView()
+    # window.show_view(start_view)
+    # arcade.run()
 
 
 if __name__ == "__main__":

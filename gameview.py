@@ -4,6 +4,7 @@ import math
 from protagonist import PlayerCharacter
 from boss import BossCharacter
 from enemy import EnemyCharacter
+from gameoverview import GameOverView
 
 """HERE WE DECLARE OUR CONSTANTS"""
 
@@ -69,6 +70,8 @@ class GameView(arcade.View):
         self.ememy_list = None
         self.potion_list = None
 
+        #Keeps track of game level
+        self.level = 1
 
         # Separate variable that holds the player sprite
         self.player_sprite = None
@@ -95,7 +98,7 @@ class GameView(arcade.View):
 
         # Keep track of the lives
         self.lives = 1
-        if self.lives == 0:
+        if self.lives <= 0:
                 end = GameOverView()
                 end
 
@@ -160,7 +163,7 @@ class GameView(arcade.View):
         self.potion_list.append(self.potion_sprite)
 
         # Map name
-        map_name = 'Documentation/game_map_1.tmx'
+        map_name = f'Documentation/game_map_{self.level}.tmx'
         
         # Name of the layer in the file that has our platforms/walls
         wall_layer_name = "collision_blocks"
@@ -354,8 +357,11 @@ class GameView(arcade.View):
         # lose a life if you hit an enemy
         for enemy in enemy_hit_list:
             self.lives = self.lives - 1
-            arcade.play_sound(self.jump_sound)
-            enemy.remove_from_sprite_lists()
+            end = GameOverView()
+            end
+            """I have to figure out how to center the screen so the game over view screen shows up"""
+            arcade.set_viewport(0,1200,0,1000)
+            self.window.show_view(end)
         
         # if there is a potion collision then has potion will be set to true
         for potion in  potion_hit_list:
