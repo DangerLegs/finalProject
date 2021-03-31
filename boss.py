@@ -1,4 +1,7 @@
 import arcade
+"""
+The animation changes for the boss will be controlled by this class
+"""
 
 def load_texture_pair(filename):
     """
@@ -11,9 +14,9 @@ def load_texture_pair(filename):
 
 
 class BossCharacter(arcade.Sprite):
-    """enemy sprite animations"""
+    """ Boss sprite animations """
     def __init__(self):
-        
+        """ establishes the different animations """        
         # set up parent class
         super().__init__()
 
@@ -34,7 +37,7 @@ class BossCharacter(arcade.Sprite):
         self.texture = self.idle_texture_pair[1]
 
     def update_animation(self, delta_time: float = 1/60):
-
+        """changes the picture that will be drawn on the next loop"""
         # walking animation
         self.cur_texture += 1
         if self.cur_texture > 9:

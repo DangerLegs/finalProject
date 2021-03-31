@@ -133,7 +133,7 @@ class GameView(arcade.View):
 
         # Set up the boss
         self.boss_sprite = BossCharacter()
-        self.boss_sprite.center_x = 3080
+        self.boss_sprite.center_x = 3200
         self.boss_sprite.center_y = 1573
         self.enemy_list.append(self.boss_sprite)
         
@@ -295,7 +295,7 @@ class GameView(arcade.View):
             difference_x = self.boss_sprite.center_x - self.player_sprite.center_x
             difference_y = self.boss_sprite.center_y - self.player_sprite.center_y
             # the boss will not move if we are too high above him
-            if difference_y >= -100:
+            if difference_y >= -80:
                 # pythagorean theorem to calculate direct distance froom player to boss
                 distance = math.sqrt((difference_x ** 2) + (difference_y ** 2))
                 # boss only moves if we are close to him
@@ -310,19 +310,19 @@ class GameView(arcade.View):
         
         
         # back and forth movement of the enemies
-        if self.enemy_sprite_2.center_x == 700:
+        if self.enemy_sprite_2.center_x >= 700:
             self.enemy_sprite_2.change_x = -ENEMY_MOVEMENT_SPEED
-        elif self.enemy_sprite_2.center_x == 520:
+        elif self.enemy_sprite_2.center_x <= 520:
             self.enemy_sprite_2.change_x = ENEMY_MOVEMENT_SPEED
 
-        if self.enemy_sprite_3.center_x == 1236:
+        if self.enemy_sprite_3.center_x >= 1236:
             self.enemy_sprite_3.change_x = -ENEMY_MOVEMENT_SPEED
-        elif self.enemy_sprite_3.center_x == 1060:
+        elif self.enemy_sprite_3.center_x <= 1060:
             self.enemy_sprite_3.change_x = ENEMY_MOVEMENT_SPEED
         
-        if self.enemy_sprite_4.center_x == 320:
+        if self.enemy_sprite_4.center_x >= 320:
             self.enemy_sprite_4.change_x = -ENEMY_MOVEMENT_SPEED
-        elif self.enemy_sprite_4.center_x == 160:
+        elif self.enemy_sprite_4.center_x <= 160:
             self.enemy_sprite_4.change_x = ENEMY_MOVEMENT_SPEED      
         
         
