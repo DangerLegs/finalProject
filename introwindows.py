@@ -48,7 +48,8 @@ class IntroView(arcade.View):
     def on_draw(self):
         """ Draw this view """
         arcade.start_render()
-        arcade.draw_text("Objective: Find the potion to clean King Dino's water supply.", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+        arcade.draw_text("""Objective: Find the potion to clean King Dino's water supply.
+                         Then lead the king into the water to save him""", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                          arcade.color.WHITE, font_size=36, anchor_x="center")
 
         arcade.draw_text("Click to advance", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
