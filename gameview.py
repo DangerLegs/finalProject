@@ -17,7 +17,7 @@ SCREEN_TITLE = "Platformer"
 TILE_SCALING = 0.25
 SPRITE_PIXEL_SIZE = 150
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
-POTION_SCALING = 10
+POTION_SCALING = 0.75
 
 # Movement speed of player, in pixels per frame
 PLAYER_MOVEMENT_SPEED = 9
@@ -156,7 +156,8 @@ class GameView(arcade.View):
         
         #setup potion pick up sprite
         self.potion_list = arcade.SpriteList()
-        potion_image_source = "Documentation/angry_dino_idle.png"
+        #Documentation/potion.png
+        potion_image_source = "Documentation/AnyConv.com__red_water.png"
         self.potion_sprite = arcade.Sprite(potion_image_source, POTION_SCALING)
         self.potion_sprite.center_x = 3128
         self.potion_sprite.center_y = 1024
