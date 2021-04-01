@@ -233,6 +233,9 @@ class GameView(arcade.View):
         arcade.draw_text(lives_text, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.csscolor.BLACK, 18)
 
+        arcade.draw_text(f"{self.player_sprite.center_x} x, {self.player_sprite.center_y} y", (self.player_sprite.center_x + 50), (self.player_sprite.center_y + 30),
+arcade.color.WHITE, font_size=20, anchor_x="center")
+
         # self.player_sprite.draw_hit_box(arcade.color.RED, 3)
 
     def process_keychange(self):
