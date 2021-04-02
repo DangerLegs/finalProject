@@ -18,6 +18,7 @@ TILE_SCALING = 0.25
 SPRITE_PIXEL_SIZE = 150
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
 POTION_SCALING = 0.75
+WATER_SCALING = 1.25
 
 # Movement speed of player, in pixels per frame
 PLAYER_MOVEMENT_SPEED = 9
@@ -69,6 +70,7 @@ class GameView(arcade.View):
         self.player_list = None
         self.ememy_list = None
         self.potion_list = None
+        self.water_list = None
 
         #Keeps track of game level
         self.level = 1
@@ -127,6 +129,7 @@ class GameView(arcade.View):
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
+        self.water_list = arcade.SpriteList()
 
         # Set up the player, specifically placing it at these coordinates.
         self.player_sprite = PlayerCharacter()
@@ -162,6 +165,24 @@ class GameView(arcade.View):
         self.potion_sprite.center_x = 3128
         self.potion_sprite.center_y = 1024
         self.potion_list.append(self.potion_sprite)
+
+        water_source = 'Documentation/water.png'
+        self.water_sprite_1 = arcade.Sprite(water_source, WATER_SCALING)
+        self.water_sprite_1.center_x = 1138
+        self.water_sprite_1.center_y = 80
+        self.water_list.append(self.water_sprite_1)
+        self.water_sprite_2 = arcade.Sprite(water_source, WATER_SCALING)
+        self.water_sprite_2.center_x = 1296
+        self.water_sprite_2.center_y = 80
+        self.water_list.append(self.water_sprite_2)
+        self.water_sprite_3 = arcade.Sprite(water_source, WATER_SCALING)
+        self.water_sprite_3.center_x = 1138
+        self.water_sprite_3.center_y = 240
+        self.water_list.append(self.water_sprite_3)
+        self.water_sprite_4 = arcade.Sprite(water_source, WATER_SCALING)
+        self.water_sprite_4.center_x = 1296
+        self.water_sprite_4.center_y = 240
+        self.water_list.append(self.water_sprite_4)
 
         # Map name
         map_name = f'Documentation/game_map_{self.level}.tmx'
@@ -227,6 +248,7 @@ class GameView(arcade.View):
         self.player_list.draw()
         self.enemy_list.draw()
         self.potion_sprite.draw()
+        self.water_list.draw()
 
         # Draw our score on the screen, scrolling it with the viewport
         lives_text = f"Lives: {self.lives}"
@@ -358,9 +380,15 @@ arcade.color.WHITE, font_size=20, anchor_x="center")
                                                               self.enemy_list)
         potion_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                       self.potion_list)
+        poisoned_water_list = arcade.check_for_collision_with_list(self.player_sprite,
+                                                                    self.water_list)
+
+        # die if you land in water
+        for drop in poisoned_water_list:
+            end = GameOverView()
+            end
         # lose a life if you hit an enemy
         for enemy in enemy_hit_list:
-            self.lives = self.lives - 1
             end = GameOverView()
             end
             """I have to figure out how to center the screen so the game over view screen shows up"""
