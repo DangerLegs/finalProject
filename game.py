@@ -1,249 +1,53 @@
-"""
-Platformer Game
-python -m arcade.examples.platform_tutorial.11_animate_character
-"""
 import arcade
-import math
 import os
-
+import math
 from protagonist import PlayerCharacter
-# Constants
+from boss import BossCharacter
+from enemy import EnemyCharacter
+from gameoverview import GameOverView
+from drownedend import Drowned
+from fellend import Fell
+#from gamewon import GameWon
+
+"""HERE WE DECLARE OUR CONSTANTS"""
+
+# Screen dimensions
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "Platformer"
-
 # Constants used to scale our sprites from their original size
 TILE_SCALING = 0.25
-CHARACTER_SCALING = 1
-COIN_SCALING = TILE_SCALING
 SPRITE_PIXEL_SIZE = 150
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
-ENEMY_SCALING = 1.25
-BOSS_SCALING = 1.5
-POTION_SCALING = .075
-
-
+POTION_SCALING = 0.25
+WATER_SCALING = 3
 # Movement speed of player, in pixels per frame
-PLAYER_MOVEMENT_SPEED = 18
-GRAVITY = 1.5
-PLAYER_JUMP_SPEED = 33
-
+PLAYER_MOVEMENT_SPEED = 9
+GRAVITY = 1.1
+PLAYER_JUMP_SPEED = 25
 # movement speed of enemies
-ENEMY_MOVEMENT_SPEED = 5
-BOSS_MOVEMENT_SPEED = -15
+ENEMY_MOVEMENT_SPEED = 3
+BOSS_MOVEMENT_SPEED = -7
 POTION_MOVEMENT_SPEED = 0
-
-
-
-
 # How many pixels to keep as a minimum margin between the character
 # and the edge of the screen.
-LEFT_VIEWPORT_MARGIN = 400
-RIGHT_VIEWPORT_MARGIN = 400
-BOTTOM_VIEWPORT_MARGIN = 600
-TOP_VIEWPORT_MARGIN = 300
-
+LEFT_VIEWPORT_MARGIN = 500
+RIGHT_VIEWPORT_MARGIN = 500
+BOTTOM_VIEWPORT_MARGIN = 400
+TOP_VIEWPORT_MARGIN = 400
+# More scaling constants
 PLAYER_START_X = SPRITE_PIXEL_SIZE * TILE_SCALING * 2
 PLAYER_START_Y = SPRITE_PIXEL_SIZE * TILE_SCALING * 1
 
-# Constants used to track if the player is facing left or right
-RIGHT_FACING = 0
-LEFT_FACING = 1
-
-
-def load_texture_pair(filename):
-    """
-    Load a texture pair, with the second being a mirror image.
-    """
-    return [
-        arcade.load_texture(filename),
-        arcade.load_texture(filename, flipped_horizontally=True)
-    ]
-
-
-class PlayerCharacter(arcade.Sprite):
-    """ Player Sprite"""
-    def __init__(self):
-
-        # Set up parent class
-        super().__init__()
-
-        # Default to face-right
-        self.character_face_direction = RIGHT_FACING
-
-        # Used for flipping between image sequences
-        self.cur_texture = 0
-        self.scale = CHARACTER_SCALING
-
-        # Track our state
-        self.jumping = False
-        self.climbing = False
-        self.is_on_ladder = False
-
-        # --- Load Textures ---
-
-        # Images from Kenney.nl's Asset Pack 3
-        # main_path = ":resources:images/animated_characters/female_adventurer/femaleAdventurer"
-        # main_path = ":resources:images/animated_characters/female_person/femalePerson"
-        main_path = ":resources:images/animated_characters/male_person/malePerson"
-        # main_path = ":resources:images/animated_characters/male_adventurer/maleAdventurer"
-        # main_path = ":resources:images/animated_characters/zombie/zombie"
-        # main_path = ":resources:images/animated_characters/robot/robot"
-
-        # Load textures for idle standing
-        self.idle_texture_pair = load_texture_pair(f"{main_path}_idle.png")
-        self.jump_texture_pair = load_texture_pair(f"{main_path}_jump.png")
-        self.fall_texture_pair = load_texture_pair(f"{main_path}_fall.png")
-
-        # Load textures for walking
-        self.walk_textures = []
-        for i in range(8):
-            texture = load_texture_pair(f"{main_path}_walk{i}.png")
-            self.walk_textures.append(texture)
-
-        # Load textures for climbing
-        self.climbing_textures = []
-        texture = arcade.load_texture(f"{main_path}_climb0.png")
-        self.climbing_textures.append(texture)
-        texture = arcade.load_texture(f"{main_path}_climb1.png")
-        self.climbing_textures.append(texture)
-
-        # Set the initial texture
-        self.texture = self.idle_texture_pair[0]
-
-        # Hit box will be set based on the first image used. If you want to specify
-        # a different hit box, you can do it like the code below.
-        # self.set_hit_box([[-22, -64], [22, -64], [22, 28], [-22, 28]])
-        self.set_hit_box(self.texture.hit_box_points)
-
-    def update_animation(self, delta_time: float = 1/60):
-
-        # Figure out if we need to flip face left or right
-        if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
-            self.character_face_direction = LEFT_FACING
-        elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
-            self.character_face_direction = RIGHT_FACING
-
-        # Climbing animation
-        if self.is_on_ladder:
-            self.climbing = True
-        if not self.is_on_ladder and self.climbing:
-            self.climbing = False
-        if self.climbing and abs(self.change_y) > 1:
-            self.cur_texture += 1
-            if self.cur_texture > 7:
-                self.cur_texture = 0
-        if self.climbing:
-            self.texture = self.climbing_textures[self.cur_texture // 4]
-            return
-
-        # Jumping animation
-        if self.change_y > 0 and not self.is_on_ladder:
-            self.texture = self.jump_texture_pair[self.character_face_direction]
-            return
-        elif self.change_y < 0 and not self.is_on_ladder:
-            self.texture = self.fall_texture_pair[self.character_face_direction]
-            return
-
-        # Idle animation
-        if self.change_x == 0:
-            self.texture = self.idle_texture_pair[self.character_face_direction]
-            return
-
-        # Walking animation
-        self.cur_texture += 1
-        if self.cur_texture > 7:
-            self.cur_texture = 0
-        self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
-
-
-# Instruction screen / main menu
-class InstructionView(arcade.View):
-
-    def on_show(self):
-        """ This is run once when we switch to this view """
-        arcade.set_background_color(arcade.csscolor.DARK_GOLDENROD)
-
-        # Reset the viewport, necessary if we have a scrolling game and we need
-        # to reset the viewport back to the start so we can see what we draw.
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
-    
-    def on_draw(self):
-        """ Draw this view """
-        arcade.start_render()
-        arcade.draw_text("Instructions Screen", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
-                         arcade.color.WHITE, font_size=50, anchor_x="center")
-        arcade.draw_text("Click to advance", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
-                         arcade.color.WHITE, font_size=20, anchor_x="center")
-
-    def on_mouse_press(self, _x, _y, _button, _modifiers):
-        """ If the user presses the mouse button, start the game. """
-        game_view = IntroView()
-        game_view
-        self.window.show_view(game_view)
-
-# Intro screen that tells the protagonists story 
-class IntroView(arcade.View):
-
-    def on_show(self):
-        """ This is run once when we switch to this view """
-        arcade.set_background_color(arcade.csscolor.DARK_GOLDENROD)
-
-        # Reset the viewport, necessary if we have a scrolling game and we need
-        # to reset the viewport back to the start so we can see what we draw.
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
-    
-    def on_draw(self):
-        """ Draw this view """
-        arcade.start_render()
-        arcade.draw_text("Here is the story of the game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
-                         arcade.color.WHITE, font_size=50, anchor_x="center")
-        arcade.draw_text("Click to advance", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
-                         arcade.color.WHITE, font_size=20, anchor_x="center")
-
-    def on_mouse_press(self, _x, _y, _button, _modifiers):
-        """ If the user presses the mouse button, start the game. """
-        game_view = GameView()
-        game_view.setup()
-        self.window.show_view(game_view)
-
-# Screen that displays when the player dies
-class GameOverView(arcade.View):
-
-    def on_show(self):
-        """ This is run once when we switch to this view """
-        arcade.set_background_color(arcade.csscolor.DARK_GOLDENROD)
-
-        # Reset the viewport, necessary if we have a scrolling game and we need
-        # to reset the viewport back to the start so we can see what we draw.
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
-    
-    def on_draw(self):
-        """ Draw this view """
-        arcade.start_render()
-        arcade.draw_text("Game over - you lost!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
-                         arcade.color.WHITE, font_size=50, anchor_x="center")
-        arcade.draw_text("Click to advance", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
-                         arcade.color.WHITE, font_size=20, anchor_x="center")
-
-    def on_mouse_press(self, _x, _y, _button, _modifiers):
-        """ If the user presses the mouse button, start the game. """
-        game_view = GameView()
-        game_view.setup()
-        self.window.show_view(game_view)
-
-    
 
 class GameView(arcade.View):
-
-
     """
     Main application class.
     """
 
     def __init__(self):
         """
-        Initializer for the game
+        Initializes all of the lists, sprites, and sounds for the game
         """
 
         # Call the parent class and set up the window
@@ -262,14 +66,15 @@ class GameView(arcade.View):
 
         # These are 'lists' that keep track of our sprites. Each sprite should
         # go into a list.
-        self.coin_list = None
         self.wall_list = None
-        self.background_list = None
-        self.ladder_list = None
         self.player_list = None
         self.ememy_list = None
         self.potion_list = None
+        self.water_list = None
+        self.lava_list = None
 
+        #Keeps track of game level
+        self.level = 1
 
         # Separate variable that holds the player sprite
         self.player_sprite = None
@@ -296,9 +101,11 @@ class GameView(arcade.View):
 
         # Keep track of the lives
         self.lives = 1
-        if self.lives == 0:
+        if self.lives <= 0:
                 end = GameOverView()
                 end
+
+        
 
         # Load sounds
         self.collect_coin_sound = arcade.load_sound(":resources:sounds/coin1.wav")
@@ -321,10 +128,10 @@ class GameView(arcade.View):
 
         # Create the Sprite lists
         self.player_list = arcade.SpriteList()
-        self.background_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
-        self.coin_list = arcade.SpriteList()
-        
+        self.enemy_list = arcade.SpriteList()
+        self.water_list = arcade.SpriteList()
+        self.lava_list = arcade.SpriteList()
 
         # Set up the player, specifically placing it at these coordinates.
         self.player_sprite = PlayerCharacter()
@@ -332,48 +139,55 @@ class GameView(arcade.View):
         self.player_sprite.center_y = PLAYER_START_Y
         self.player_list.append(self.player_sprite)
 
-        # Set up the enemy
-        self.enemy_list = arcade.SpriteList()
-        #"artwork/1x/stego_idle.png"
-        enemy_image_source = "artwork/1x/angry_dino_idle.png"
-        boss_image_source = "artwork/1x/angry_dino_idle.png"
-        self.boss_sprite = arcade.Sprite(boss_image_source, BOSS_SCALING)
-        self.enemy_sprite_2 = arcade.Sprite(enemy_image_source, ENEMY_SCALING)
-        self.enemy_sprite_3 = arcade.Sprite(enemy_image_source, ENEMY_SCALING)
-        self.enemy_sprite_4 = arcade.Sprite(enemy_image_source, ENEMY_SCALING)
-        self.boss_sprite.center_x = 3080
+        # Set up the boss
+        self.boss_sprite = BossCharacter()
+        self.boss_sprite.center_x = 3200
         self.boss_sprite.center_y = 1573
+        self.enemy_list.append(self.boss_sprite)
+        
+        # set up the enemies
+        self.enemy_sprite_2 = EnemyCharacter()
         self.enemy_sprite_2.center_x = 520
         self.enemy_sprite_2.center_y = 965
-        self.enemy_sprite_3.center_x = 1046
-        self.enemy_sprite_3.center_y = 1637
-        self.enemy_sprite_4.center_x = 160
-        self.enemy_sprite_4.center_y = 2084
-        self.enemy_list.append(self.boss_sprite)
         self.enemy_list.append(self.enemy_sprite_2)
+        self.enemy_sprite_3 = EnemyCharacter()
+        self.enemy_sprite_3.center_x = 1060
+        self.enemy_sprite_3.center_y = 1637   
         self.enemy_list.append(self.enemy_sprite_3)
+        self.enemy_sprite_4 = EnemyCharacter()
+        self.enemy_sprite_4.center_x = 160
+        self.enemy_sprite_4.center_y = 2084                
         self.enemy_list.append(self.enemy_sprite_4)
-        # --- Load in a map from the tiled editor ---
-
+        
         #setup potion pick up sprite
         self.potion_list = arcade.SpriteList()
-        #"artwork/nice_eyes/Asset 1nice_king.png"
-        potion_image_source = "artwork/1x/angry_dino_idle.png"
+        #Documentation/potion.png
+        potion_image_source = 'Documentation/potion.png'
         self.potion_sprite = arcade.Sprite(potion_image_source, POTION_SCALING)
         self.potion_sprite.center_x = 3128
         self.potion_sprite.center_y = 1024
         self.potion_list.append(self.potion_sprite)
 
+        self.liquid = 'lava'
+        lava_source = f'Documentation/{self.liquid}.png'
+        self.lava_sprite_1 = arcade.Sprite(lava_source, WATER_SCALING)
+        self.lava_sprite_1.center_x = 1218
+        self.lava_sprite_1.center_y = 160
+        self.lava_list.append(self.lava_sprite_1)
+        
+        water_source = "documentation/water2.png"
+        self.water_sprite = arcade.Sprite(water_source, WATER_SCALING)
+        self.water_sprite.center_x = 1218
+        self.water_sprite.center_y = 175
+        self.water_list.append(self.water_sprite)
+        
 
+        # Map name
+        map_name = f'Documentation/game_map_{self.level}.tmx'
+        
         # Name of the layer in the file that has our platforms/walls
         wall_layer_name = "collision_blocks"
         dangers_layer_name = "danger_blocks"
-
-        # Name of the layer that has items for pick-up
-        coins_layer_name = 'Coins'
-
-        # Map name
-        map_name = 'game_map_1.tmx'
 
         # Read in the tiled map
         my_map = arcade.tilemap.read_tmx(map_name)
@@ -386,24 +200,6 @@ class GameView(arcade.View):
                                                         layer_name=wall_layer_name,
                                                         scaling=TILE_SCALING,
                                                         use_spatial_hash=True)
-
-        # -- Moving Platforms
-        # moving_platforms_list = arcade.tilemap.process_layer(my_map, moving_platforms_layer_name, TILE_SCALING)
-        # for sprite in moving_platforms_list:
-        #     self.wall_list.append(sprite)
-
-        # -- Background objects
-        # self.background_list = arcade.tilemap.process_layer(my_map, "Background", TILE_SCALING)
-
-        # # -- Background objects
-        # self.ladder_list = arcade.tilemap.process_layer(my_map, "Ladders",
-        #                                                 TILE_SCALING,
-        #                                                 use_spatial_hash=True)
-
-        # # -- Coins
-        # self.coin_list = arcade.tilemap.process_layer(my_map, coins_layer_name,
-        #                                               TILE_SCALING,
-        #                                               use_spatial_hash=True)
 
         # --- Other stuff
         # Set the background color
@@ -436,8 +232,8 @@ class GameView(arcade.View):
                                                              gravity_constant=GRAVITY)
 
         self.potion_sprite_physics_engine = arcade.PhysicsEnginePlatformer(self.potion_sprite,
-                                                     self.wall_list,
-                                                     gravity_constant=GRAVITY)                                                     
+                                                            self.wall_list,
+                                                            gravity_constant=GRAVITY)                                                     
 
     def on_draw(self):
         """ Render the screen. """
@@ -446,23 +242,25 @@ class GameView(arcade.View):
         arcade.start_render()
 
         # Draw our sprites
+        if self.has_potion:
+            self.water_list.draw()
+        else:
+            self.lava_list.draw()
+
         self.wall_list.draw()
-        self.background_list.draw()
-        #self.ladder_list.draw()
-        #self.coin_list.draw()
         self.player_list.draw()
         self.enemy_list.draw()
         self.potion_sprite.draw()
+
 
         # Draw our score on the screen, scrolling it with the viewport
         lives_text = f"Lives: {self.lives}"
         arcade.draw_text(lives_text, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.csscolor.BLACK, 18)
 
-        # Draw hit boxes.
-        # for wall in self.wall_list:
-        #     wall.draw_hit_box(arcade.color.BLACK, 3)
-        #
+        arcade.draw_text(f"{self.player_sprite.center_x} x, {self.player_sprite.center_y} y", (self.player_sprite.center_x + 50), (self.player_sprite.center_y + 30),
+arcade.color.WHITE, font_size=20, anchor_x="center")
+
         # self.player_sprite.draw_hit_box(arcade.color.RED, 3)
 
     def process_keychange(self):
@@ -480,13 +278,6 @@ class GameView(arcade.View):
         elif self.down_pressed and not self.up_pressed:
             if self.physics_engine.is_on_ladder():
                 self.player_sprite.change_y = -PLAYER_MOVEMENT_SPEED
-
-        # Process up/down when on a ladder and no movement
-        if self.physics_engine.is_on_ladder():
-            if not self.up_pressed and not self.down_pressed:
-                self.player_sprite.change_y = 0
-            elif self.up_pressed and self.down_pressed:
-                self.player_sprite.change_y = 0
 
         # Process left/right
         if self.right_pressed and not self.left_pressed:
@@ -527,93 +318,115 @@ class GameView(arcade.View):
 
     def on_update(self, delta_time):
         """ Movement and game logic """
-
+        
+        
+        # moves the boss
+        # boss does not move until the player has gotten the potion
         if self.has_potion:
+            # calculates the difference between the player's and boss's coordinates 
             difference_x = self.boss_sprite.center_x - self.player_sprite.center_x
             difference_y = self.boss_sprite.center_y - self.player_sprite.center_y
-            if difference_y >= -100:
+            # the boss will not move if we are too high above him
+            if difference_y >= -80:
+                # pythagorean theorem to calculate direct distance froom player to boss
                 distance = math.sqrt((difference_x ** 2) + (difference_y ** 2))
+                # boss only moves if we are close to him
                 if distance < 300:
-                    self.boss_sprite.change_x = BOSS_MOVEMENT_SPEED           
+                    self.boss_sprite.change_x = BOSS_MOVEMENT_SPEED
+                # there is a spot that the boss can get stuck easily, this fixes that
                 elif self.boss_sprite.center_x < 2400 and self.boss_sprite.center_x > 2100:
                     self.boss_sprite.change_x = BOSS_MOVEMENT_SPEED
-            
-                else:
-                    self.boss_sprite.change_x = 0
-
-        if self.enemy_sprite_2.center_x == 700:
+        # if not all of the requirements are met, the boss stays still    
+        else:
+            self.boss_sprite.change_x = 0
+        
+        
+        # back and forth movement of the enemies
+        if self.enemy_sprite_2.center_x >= 700:
             self.enemy_sprite_2.change_x = -ENEMY_MOVEMENT_SPEED
-        elif self.enemy_sprite_2.center_x == 520:
+        elif self.enemy_sprite_2.center_x <= 520:
             self.enemy_sprite_2.change_x = ENEMY_MOVEMENT_SPEED
 
-        if self.enemy_sprite_3.center_x == 1236:
+        if self.enemy_sprite_3.center_x >= 1236:
             self.enemy_sprite_3.change_x = -ENEMY_MOVEMENT_SPEED
-        elif self.enemy_sprite_3.center_x == 1046:
+        elif self.enemy_sprite_3.center_x <= 1060:
             self.enemy_sprite_3.change_x = ENEMY_MOVEMENT_SPEED
         
-        if self.enemy_sprite_4.center_x == 320:
+        if self.enemy_sprite_4.center_x >= 320:
             self.enemy_sprite_4.change_x = -ENEMY_MOVEMENT_SPEED
-        elif self.enemy_sprite_4.center_x == 160:
+        elif self.enemy_sprite_4.center_x <= 160:
             self.enemy_sprite_4.change_x = ENEMY_MOVEMENT_SPEED      
         
-        # Move the player with the physics engine
-        self.physics_engine.update()
         
-        # move the enemies with the physics engine
+        # update the physics engines
+        self.physics_engine.update()
         self.boss_physics_engine.update()
         self.enemy2_physics_engine.update()
         self.enemy3_physics_engine.update()
         self.enemy4_physics_engine.update()
 
+        
         # Update animations
         if self.physics_engine.can_jump():
             self.player_sprite.can_jump = False
         else:
             self.player_sprite.can_jump = True
 
-        if self.physics_engine.is_on_ladder() and not self.physics_engine.can_jump():
-            self.player_sprite.is_on_ladder = True
-            self.process_keychange()
-        else:
-            self.player_sprite.is_on_ladder = False
-            self.process_keychange()
-
-        self.coin_list.update_animation(delta_time)
-        self.background_list.update_animation(delta_time)
         self.player_list.update_animation(delta_time)
+        self.enemy_list.update_animation(delta_time)
 
-        # Update walls, used with moving platforms
-        self.wall_list.update()
-
-        # See if the moving wall hit a boundary and needs to reverse direction.
-        for wall in self.wall_list:
-
-            if wall.boundary_right and wall.right > wall.boundary_right and wall.change_x > 0:
-                wall.change_x *= -1
-            if wall.boundary_left and wall.left < wall.boundary_left and wall.change_x < 0:
-                wall.change_x *= -1
-            if wall.boundary_top and wall.top > wall.boundary_top and wall.change_y > 0:
-                wall.change_y *= -1
-            if wall.boundary_bottom and wall.bottom < wall.boundary_bottom and wall.change_y < 0:
-                wall.change_y *= -1
-
+        
+        # check for any collisions
         danger_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                                self.danger_list)
         enemy_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                               self.enemy_list)
         potion_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                       self.potion_list)
+        poisoned_water_list = arcade.check_for_collision_with_list(self.player_sprite,
+                                                                    self.lava_list)
+        boss_water = arcade.check_for_collision_with_list(self.boss_sprite,
+                                                self.water_list)
+
+        """Ways to die"""
+
+        # die if you land in water
+        for drop in poisoned_water_list:
+            self.lives = self.lives - 1
+            end = Drowned()
+            end
+            arcade.set_viewport(0,1200,0,1000)
+            self.window.show_view(end)
+
+
+        # lose a life if you hit an enemy
         for enemy in enemy_hit_list:
             self.lives = self.lives - 1
-            arcade.play_sound(self.jump_sound)
-            enemy.remove_from_sprite_lists()
-    #if there is a potion collision then has potion will be set to true
+            end = GameOverView()
+            end
+            arcade.set_viewport(0,1200,0,1000)
+            self.window.show_view(end)
+        
+        # if there is a potion collision then has potion will be set to true
         for potion in  potion_hit_list:
             potion.remove_from_sprite_lists()
             self.has_potion = True
-        
-
+            self.liquid = 'water'
             
+
+        if self.player_sprite.center_y <= -1000:
+            end = Fell()
+            end
+            arcade.set_viewport(0,1200,0,1000)
+            self.window.show_view(end)
+            
+        """way to win"""
+        for i in boss_water:
+            end = GameWon()
+            end
+            arcade.set_viewport(0,1200,0,1000)
+            self.window.show_view(end)
+        
 
         # Track if we need to change the viewport
         changed_viewport = False
@@ -655,17 +468,3 @@ class GameView(arcade.View):
                                 SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 SCREEN_HEIGHT + self.view_bottom)
-
-
-def main():
-    """ Main method """
-
-    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    start_view = InstructionView()
-    window.show_view(start_view)
-    start_view
-    arcade.run()
-
-
-if __name__ == "__main__":
-    main()
