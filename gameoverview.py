@@ -14,6 +14,8 @@ class GameOverView(arcade.View):
         """ This is run once when we switch to this view """
         arcade.set_background_color(arcade.csscolor.DARK_GOLDENROD)
         arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+        self.game_over = arcade.load_sound(":resources:sounds/gameover1.wav")
+
     
     def on_draw(self):
         """ Draw this view """

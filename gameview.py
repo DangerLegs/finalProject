@@ -7,6 +7,7 @@ from enemy import EnemyCharacter
 from gameoverview import GameOverView
 from drownedend import Drowned
 from fellend import Fell
+from gamewon import GameWon
 
 """HERE WE DECLARE OUR CONSTANTS"""
 
@@ -18,7 +19,7 @@ SCREEN_TITLE = "Platformer"
 TILE_SCALING = 0.25
 SPRITE_PIXEL_SIZE = 150
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
-POTION_SCALING = 0.75
+POTION_SCALING = 1.25
 WATER_SCALING = 1.25
 # Movement speed of player, in pixels per frame
 PLAYER_MOVEMENT_SPEED = 9
@@ -159,14 +160,14 @@ class GameView(arcade.View):
         #setup potion pick up sprite
         self.potion_list = arcade.SpriteList()
         #Documentation/potion.png
-        potion_image_source = "Documentation/AnyConv.com__red_water.png"
+        potion_image_source = 'Documentation/potion.png'
         self.potion_sprite = arcade.Sprite(potion_image_source, POTION_SCALING)
         self.potion_sprite.center_x = 3128
         self.potion_sprite.center_y = 1024
         self.potion_list.append(self.potion_sprite)
 
-        liquid = 'lava'
-        water_source = f'Documentation/{liquid}.png'
+        self.liquid = 'lava'
+        water_source = f'Documentation/{self.liquid}.png'
         self.water_sprite_1 = arcade.Sprite(water_source, WATER_SCALING)
         self.water_sprite_1.center_x = 1138
         self.water_sprite_1.center_y = 80
@@ -382,6 +383,10 @@ arcade.color.WHITE, font_size=20, anchor_x="center")
                                                       self.potion_list)
         poisoned_water_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                                     self.water_list)
+        boss_water = arcade.check_for_collision_with_list(self.boss_sprite,
+                                                self.water_list)
+
+        """Ways to die"""
 
         # die if you land in water
         for drop in poisoned_water_list:
@@ -390,14 +395,13 @@ arcade.color.WHITE, font_size=20, anchor_x="center")
             end
             arcade.set_viewport(0,1200,0,1000)
             self.window.show_view(end)
-            
+
 
         # lose a life if you hit an enemy
         for enemy in enemy_hit_list:
             self.lives = self.lives - 1
             end = GameOverView()
             end
-            """I have to figure out how to center the screen so the game over view screen shows up"""
             arcade.set_viewport(0,1200,0,1000)
             self.window.show_view(end)
         
@@ -405,14 +409,22 @@ arcade.color.WHITE, font_size=20, anchor_x="center")
         for potion in  potion_hit_list:
             potion.remove_from_sprite_lists()
             self.has_potion = True
+            self.liquid = 'water'
+            
 
         if self.player_sprite.center_y <= -1000:
             end = Fell()
             end
-            """I have to figure out how to center the screen so the game over view screen shows up"""
             arcade.set_viewport(0,1200,0,1000)
             self.window.show_view(end)
             
+        """way to win"""
+        for i in boss_water:
+            end = GameWon()
+            end
+            arcade.set_viewport(0,1200,0,1000)
+            self.window.show_view(end)
+        
 
         # Track if we need to change the viewport
         changed_viewport = False
