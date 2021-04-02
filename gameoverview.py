@@ -19,7 +19,7 @@ class GameOverView(arcade.View):
         """ Draw this view """
         arcade.start_render()
         arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
-        arcade.draw_text("Game over - you lost!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+        arcade.draw_text("You were killed by an angry dinosaur!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                          arcade.color.WHITE, font_size=30, anchor_x="center")
         arcade.draw_text("Click to Try again", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
                          arcade.color.WHITE, font_size=20, anchor_x="center")

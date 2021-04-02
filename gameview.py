@@ -5,6 +5,8 @@ from protagonist import PlayerCharacter
 from boss import BossCharacter
 from enemy import EnemyCharacter
 from gameoverview import GameOverView
+from drownedend import Drowned
+from fellend import Fell
 
 """HERE WE DECLARE OUR CONSTANTS"""
 
@@ -66,7 +68,6 @@ class GameView(arcade.View):
         # These are 'lists' that keep track of our sprites. Each sprite should
         # go into a list.
         self.wall_list = None
-        self.background_list = None
         self.player_list = None
         self.ememy_list = None
         self.potion_list = None
@@ -385,10 +386,14 @@ arcade.color.WHITE, font_size=20, anchor_x="center")
 
         # die if you land in water
         for drop in poisoned_water_list:
-            end = GameOverView()
+            self.lives = self.lives - 1
+            end = Drowned()
             end
+            arcade.set_viewport(0,1200,0,1000)
+            self.window.show_view(end)
         # lose a life if you hit an enemy
         for enemy in enemy_hit_list:
+            self.lives = self.lives - 1
             end = GameOverView()
             end
             """I have to figure out how to center the screen so the game over view screen shows up"""
@@ -399,6 +404,13 @@ arcade.color.WHITE, font_size=20, anchor_x="center")
         for potion in  potion_hit_list:
             potion.remove_from_sprite_lists()
             self.has_potion = True
+
+        if self.player_sprite.center_y <= -1000:
+            end = Fell()
+            end
+            """I have to figure out how to center the screen so the game over view screen shows up"""
+            arcade.set_viewport(0,1200,0,1000)
+            self.window.show_view(end)
             
 
         # Track if we need to change the viewport
