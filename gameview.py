@@ -14,14 +14,12 @@ from fellend import Fell
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "Platformer"
-
 # Constants used to scale our sprites from their original size
 TILE_SCALING = 0.25
 SPRITE_PIXEL_SIZE = 150
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
 POTION_SCALING = 0.75
 WATER_SCALING = 1.25
-
 # Movement speed of player, in pixels per frame
 PLAYER_MOVEMENT_SPEED = 9
 GRAVITY = 1.1
@@ -48,7 +46,7 @@ class GameView(arcade.View):
 
     def __init__(self):
         """
-        Initializer for the game
+        Initializes all of the lists, sprites, and sounds for the game
         """
 
         # Call the parent class and set up the window
@@ -167,7 +165,8 @@ class GameView(arcade.View):
         self.potion_sprite.center_y = 1024
         self.potion_list.append(self.potion_sprite)
 
-        water_source = 'Documentation/water.png'
+        liquid = 'lava'
+        water_source = f'Documentation/{liquid}.png'
         self.water_sprite_1 = arcade.Sprite(water_source, WATER_SCALING)
         self.water_sprite_1.center_x = 1138
         self.water_sprite_1.center_y = 80
@@ -391,6 +390,8 @@ arcade.color.WHITE, font_size=20, anchor_x="center")
             end
             arcade.set_viewport(0,1200,0,1000)
             self.window.show_view(end)
+            
+
         # lose a life if you hit an enemy
         for enemy in enemy_hit_list:
             self.lives = self.lives - 1
