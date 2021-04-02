@@ -163,7 +163,7 @@ class GameView(arcade.View):
         potion_image_source = 'Documentation/potion.png'
         self.potion_sprite = arcade.Sprite(potion_image_source, POTION_SCALING)
         self.potion_sprite.center_x = 3128
-        self.potion_sprite.center_y = 1024
+        self.potion_sprite.center_y = 979
         self.potion_list.append(self.potion_sprite)
 
         self.liquid = 'lava'
