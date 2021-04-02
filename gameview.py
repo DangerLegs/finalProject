@@ -8,7 +8,6 @@ from gameoverview import GameOverView
 from drownedend import Drowned
 from fellend import Fell
 from gamewon import GameWon
-from bossdie import BossDeath
 
 """HERE WE DECLARE OUR CONSTANTS"""
 
@@ -185,6 +184,7 @@ class GameView(arcade.View):
         self.water_sprite_4.center_x = 1296
         self.water_sprite_4.center_y = 240
         self.water_list.append(self.water_sprite_4)
+        
 
         # Map name
         map_name = f'Documentation/game_map_{self.level}.tmx'
@@ -386,8 +386,7 @@ arcade.color.WHITE, font_size=20, anchor_x="center")
                                                                     self.water_list)
         boss_water = arcade.check_for_collision_with_list(self.boss_sprite,
                                                 self.water_list)
-        boss_death = arcade.check_for_collision_with_list(self.player_sprite,
-                                                self.boss_sprite)
+
         """Ways to die"""
 
         # die if you land in water
@@ -406,13 +405,13 @@ arcade.color.WHITE, font_size=20, anchor_x="center")
             end
             arcade.set_viewport(0,1200,0,1000)
             self.window.show_view(end)
-            
+
         # if there is a potion collision then has potion will be set to true
         for potion in  potion_hit_list:
             potion.remove_from_sprite_lists()
             self.has_potion = True
             self.liquid = 'water'
-            
+
 
         if self.player_sprite.center_y <= -1000:
             end = Fell()
