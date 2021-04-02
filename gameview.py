@@ -71,6 +71,7 @@ class GameView(arcade.View):
         self.ememy_list = None
         self.potion_list = None
         self.water_list = None
+        self.lava_list = None
 
         #Keeps track of game level
         self.level = 1
@@ -130,6 +131,7 @@ class GameView(arcade.View):
         self.wall_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
         self.water_list = arcade.SpriteList()
+        self.lava_list = arcade.SpriteList()
 
         # Set up the player, specifically placing it at these coordinates.
         self.player_sprite = PlayerCharacter()
@@ -166,12 +168,48 @@ class GameView(arcade.View):
         self.potion_sprite.center_y = 979
         self.potion_list.append(self.potion_sprite)
 
+        # self.liquid = 'lava'
+        # water_source = f'Documentation/{self.liquid}.png'
+        # self.water_sprite_1 = arcade.Sprite(water_source, WATER_SCALING)
+        # self.water_sprite_1.center_x = 1138
+        # self.water_sprite_1.center_y = 80
+        # self.water_list.append(self.water_sprite_1)
+        # self.water_sprite_2 = arcade.Sprite(water_source, WATER_SCALING)
+        # self.water_sprite_2.center_x = 1296
+        # self.water_sprite_2.center_y = 80
+        # self.water_list.append(self.water_sprite_2)
+        # self.water_sprite_3 = arcade.Sprite(water_source, WATER_SCALING)
+        # self.water_sprite_3.center_x = 1138
+        # self.water_sprite_3.center_y = 240
+        # self.water_list.append(self.water_sprite_3)
+        # self.water_sprite_4 = arcade.Sprite(water_source, WATER_SCALING)
+        # self.water_sprite_4.center_x = 1296
+        # self.water_sprite_4.center_y = 240
+        # self.water_list.append(self.water_sprite_4)
         self.liquid = 'lava'
-        water_source = f'Documentation/{self.liquid}.png'
-        self.water_sprite_1 = arcade.Sprite(water_source, WATER_SCALING)
-        self.water_sprite_1.center_x = 1138
-        self.water_sprite_1.center_y = 80
-        self.water_list.append(self.water_sprite_1)
+        lava_source = f'Documentation/{self.liquid}.png'
+        self.lava_sprite_1 = arcade.Sprite(lava_source, WATER_SCALING)
+        self.lava_sprite_1.center_x = 1138
+        self.lava_sprite_1.center_y = 80
+        self.lava_list.append(self.lava_sprite_1)
+        self.lava_sprite_2 = arcade.Sprite(lava_source, WATER_SCALING)
+        self.lava_sprite_2.center_x = 1296
+        self.lava_sprite_2.center_y = 80
+        self.lava_list.append(self.lava_sprite_2)
+        self.lava_sprite_3 = arcade.Sprite(lava_source, WATER_SCALING)
+        self.lava_sprite_3.center_x = 1138
+        self.lava_sprite_3.center_y = 240
+        self.lava_list.append(self.lava_sprite_3)
+        self.lava_sprite_4 = arcade.Sprite(lava_source, WATER_SCALING)
+        self.lava_sprite_4.center_x = 1296
+        self.lava_sprite_4.center_y = 240
+        self.lava_list.append(self.lava_sprite_4)
+
+        water_source = "documentation/water.png"
+        self.water_sprite = arcade.Sprite(water_source, WATER_SCALING)
+        self.water_sprite.center_x = 1138
+        self.water_sprite.center_y = 80
+        self.water_list.append(self.water_sprite)
         self.water_sprite_2 = arcade.Sprite(water_source, WATER_SCALING)
         self.water_sprite_2.center_x = 1296
         self.water_sprite_2.center_y = 80
@@ -184,7 +222,6 @@ class GameView(arcade.View):
         self.water_sprite_4.center_x = 1296
         self.water_sprite_4.center_y = 240
         self.water_list.append(self.water_sprite_4)
-        
 
         # Map name
         map_name = f'Documentation/game_map_{self.level}.tmx'
@@ -250,7 +287,10 @@ class GameView(arcade.View):
         self.player_list.draw()
         self.enemy_list.draw()
         self.potion_sprite.draw()
-        self.water_list.draw()
+        if self.has_potion:
+            self.water_list.draw()
+        else:
+            self.lava_list.draw()
 
         # Draw our score on the screen, scrolling it with the viewport
         lives_text = f"Lives: {self.lives}"
