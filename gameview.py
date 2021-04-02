@@ -1,4 +1,5 @@
 import arcade
+import arcade
 import os
 import math
 from protagonist import PlayerCharacter
@@ -7,7 +8,7 @@ from enemy import EnemyCharacter
 from gameoverview import GameOverView
 from drownedend import Drowned
 from fellend import Fell
-from gamewon import GameWon
+#from gamewon import GameWon
 
 """HERE WE DECLARE OUR CONSTANTS"""
 
@@ -19,8 +20,8 @@ SCREEN_TITLE = "Platformer"
 TILE_SCALING = 0.25
 SPRITE_PIXEL_SIZE = 150
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
-POTION_SCALING = 1.25
-WATER_SCALING = 1.25
+POTION_SCALING = 0.25
+WATER_SCALING = 3
 # Movement speed of player, in pixels per frame
 PLAYER_MOVEMENT_SPEED = 9
 GRAVITY = 1.1
@@ -71,6 +72,7 @@ class GameView(arcade.View):
         self.ememy_list = None
         self.potion_list = None
         self.water_list = None
+        self.lava_list = None
 
         #Keeps track of game level
         self.level = 1
@@ -130,6 +132,7 @@ class GameView(arcade.View):
         self.wall_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
         self.water_list = arcade.SpriteList()
+        self.lava_list = arcade.SpriteList()
 
         # Set up the player, specifically placing it at these coordinates.
         self.player_sprite = PlayerCharacter()
@@ -167,23 +170,18 @@ class GameView(arcade.View):
         self.potion_list.append(self.potion_sprite)
 
         self.liquid = 'lava'
-        water_source = f'Documentation/{self.liquid}.png'
-        self.water_sprite_1 = arcade.Sprite(water_source, WATER_SCALING)
-        self.water_sprite_1.center_x = 1138
-        self.water_sprite_1.center_y = 80
-        self.water_list.append(self.water_sprite_1)
-        self.water_sprite_2 = arcade.Sprite(water_source, WATER_SCALING)
-        self.water_sprite_2.center_x = 1296
-        self.water_sprite_2.center_y = 80
-        self.water_list.append(self.water_sprite_2)
-        self.water_sprite_3 = arcade.Sprite(water_source, WATER_SCALING)
-        self.water_sprite_3.center_x = 1138
-        self.water_sprite_3.center_y = 240
-        self.water_list.append(self.water_sprite_3)
-        self.water_sprite_4 = arcade.Sprite(water_source, WATER_SCALING)
-        self.water_sprite_4.center_x = 1296
-        self.water_sprite_4.center_y = 240
-        self.water_list.append(self.water_sprite_4)
+        lava_source = f'Documentation/{self.liquid}.png'
+        self.lava_sprite_1 = arcade.Sprite(lava_source, WATER_SCALING)
+        self.lava_sprite_1.center_x = 1218
+        self.lava_sprite_1.center_y = 160
+        self.lava_list.append(self.lava_sprite_1)
+        
+        water_source = "documentation/water2.png"
+        self.water_sprite = arcade.Sprite(water_source, WATER_SCALING)
+        self.water_sprite.center_x = 1218
+        self.water_sprite.center_y = 175
+        self.water_list.append(self.water_sprite)
+        
 
         # Map name
         map_name = f'Documentation/game_map_{self.level}.tmx'
@@ -245,11 +243,16 @@ class GameView(arcade.View):
         arcade.start_render()
 
         # Draw our sprites
+        if self.has_potion:
+            self.water_list.draw()
+        else:
+            self.lava_list.draw()
+
         self.wall_list.draw()
         self.player_list.draw()
         self.enemy_list.draw()
         self.potion_sprite.draw()
-        self.water_list.draw()
+
 
         # Draw our score on the screen, scrolling it with the viewport
         lives_text = f"Lives: {self.lives}"
@@ -382,7 +385,7 @@ arcade.color.WHITE, font_size=20, anchor_x="center")
         potion_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
                                                       self.potion_list)
         poisoned_water_list = arcade.check_for_collision_with_list(self.player_sprite,
-                                                                    self.water_list)
+                                                                    self.lava_list)
         boss_water = arcade.check_for_collision_with_list(self.boss_sprite,
                                                 self.water_list)
 
@@ -466,3 +469,4 @@ arcade.color.WHITE, font_size=20, anchor_x="center")
                                 SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 SCREEN_HEIGHT + self.view_bottom)
+
