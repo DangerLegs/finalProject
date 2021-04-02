@@ -81,7 +81,7 @@ class GameView(arcade.View):
 
 
         # do we have the potion
-        self.has_potion = False
+        self.has_potion = True
 
         # Our 'physics' engine
         self.physics_engine = None
